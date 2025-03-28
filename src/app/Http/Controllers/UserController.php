@@ -21,12 +21,12 @@ class UserController extends Controller
     public function update(Request $request, $id) 
     {
         $validateData = $request->validate([
-            'name' => 'required|string|min:4|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'name' => 'sometimes|string|min:4|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email',
         ]);
-
+        
         $user = $this->userService->updateUser($validateData, $id, Auth::id());
-
+        
         return response()->json([
             'message' => 'User successfully updated!',
             'user' => $user
