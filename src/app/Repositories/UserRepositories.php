@@ -7,14 +7,31 @@ use App\Models\User;
 class UserRepositories
 {
 
-    public function findUserWithEmail($email)
+    public function findUserWithEmail(string $email)
     {
         return User::where('email', $email)->first();
     }
 
-    public function createUser($data)
+    public function createUser(array $data)
     {
         return User::create($data);
     }
 
+    public function getUser(int $id)
+    {
+        return User::findOrFail($id);
+    }
+
+    public function updateUser(array $data, int $id)
+    {
+        $user = $this->getUser($id);
+
+        $user->update($data);
+        return $user;
+    }
+
+    public function deleteUser(int $id)
+    {
+        return User::destroy($id);
+    }
 }
