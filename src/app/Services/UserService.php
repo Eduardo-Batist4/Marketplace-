@@ -28,7 +28,7 @@ class UserService
             throw new HttpException(401, 'You do not have permission to get this profile.');
         }
 
-        return $this->userRepositories->getUser($id);
+        return $this->userRepositories->getUser($id)->load('address', 'cart');
     }
 
     public function updateUser($data, $id, $user_id)
