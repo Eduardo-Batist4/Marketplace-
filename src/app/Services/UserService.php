@@ -42,6 +42,15 @@ class UserService
         return $this->userRepositories->updateUser($data, $id);
     }
 
+    public function updateUserAdmin($data, $id, $user_id)
+    {
+        if (!$this->userRepositories->userIsAdmin($user_id)) {
+            throw new HttpException(403, 'No permission!');
+        }
+
+        return $this->userRepositories->updateUser($data, $id);
+    }
+
     public function deleteUser(int $id, int $user_id)
     {
         $user = $this->userRepositories->getUser($id);

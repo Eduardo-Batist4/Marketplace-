@@ -12,6 +12,12 @@ class UserRepositories
         return User::where('email', $email)->first();
     }
 
+    public function userIsAdmin(int $id)
+    {
+        $user = User::findOrFail($id);
+        return $user->role === 'admin';
+    }
+
     public function createUser(array $data)
     {
         return User::create($data);
