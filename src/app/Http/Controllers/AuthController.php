@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CartService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
 
-    public function __construct(protected UserService $userServices) {}
+    public function __construct(protected UserService $userServices, protected CartService $cartService) {}
 
     public function login(Request $request) 
     {
@@ -47,6 +48,8 @@ class AuthController extends Controller
 
         $user = $this->userServices->createUser($validateData);
 
+        $this->cartService->createCart([ 'user_id' => $user->id ]);
+        
         return response()->json([
             'message' => 'User successfully registered!',
             'user' => $user
