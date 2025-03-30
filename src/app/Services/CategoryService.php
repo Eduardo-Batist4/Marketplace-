@@ -53,6 +53,8 @@ class CategoryService
 
     public function deleteCategory(int $id, int $user_id)
     {
+        $this->categoryRepositories->findCategory($id);
+
         if (!$this->userRepositories->userIsAdmin($user_id)) {
             throw new HttpException(401, 'You do not have authorization.'); 
         }

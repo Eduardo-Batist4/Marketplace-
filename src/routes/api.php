@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -56,6 +57,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{id}', [ProductController::class, 'update']);
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
+    // Discount
+    Route::get('/discounts', [DiscountController::class, 'index']);
+    Route::post('/discounts', [DiscountController::class, 'store']);
+    Route::get('/discounts/{id}', [DiscountController::class, 'show']);
+    Route::put('/discounts/{id}', [DiscountController::class, 'update']);
+    Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
 
 });
 

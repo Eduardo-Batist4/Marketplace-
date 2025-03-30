@@ -50,12 +50,12 @@ class ProductService
 
     public function deleteProduct(string $id, int $user_id)
     {
+        $this->productRepositories->getProduct($id);
+
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
             throw new HttpException(401, 'You do not have authorization.'); 
         }
-        
-        $this->productRepositories->deleteProduct($id);
-        
-        return response(204);
+                
+        return $this->productRepositories->deleteProduct($id);
     }
 }
