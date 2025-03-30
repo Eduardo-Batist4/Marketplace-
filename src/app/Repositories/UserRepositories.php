@@ -18,6 +18,17 @@ class UserRepositories
         return $user->role === 'admin';
     }
 
+    public function userIsAdminOrModerator(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        if($user->role === 'client') {
+            return null;
+        }
+
+        return $user->role;
+    }
+
     public function createUser(array $data)
     {
         return User::create($data);
