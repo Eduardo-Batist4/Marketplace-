@@ -12,4 +12,8 @@ class CartRepositories
         return Cart::create($data);
     }
 
+    public function getCartWithUserID(int $id)
+    {
+        return Cart::where('user_id', $id)->first();
+    }
 }

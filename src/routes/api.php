@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DiscountController;
@@ -72,6 +73,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/coupons/{id}', [CouponController::class, 'show']);
     Route::put('/coupons/{id}', [CouponController::class, 'update']);
     Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
+
+    // Cart Items
+    Route::get('/cart/items', [CartItemController::class, 'index']);
+    Route::post('/cart/items', [CartItemController::class, 'store']);
+    Route::put('/cart_items/{id}', [CartItemController::class, 'update']);
+    Route::delete('/cart_items/{id}', [CartItemController::class, 'destroy']);
 
 });
 

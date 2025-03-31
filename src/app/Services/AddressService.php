@@ -45,8 +45,6 @@ class AddressService
             throw new HttpException(401, 'You do not have permission to delete this address.');
         }
         
-        $this->addressRepositories->deleteAddress($id);
-        
-        return response(204);
+        return $this->addressRepositories->deleteAddress($id);
     }
 }
