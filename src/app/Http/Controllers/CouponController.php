@@ -32,4 +32,25 @@ class CouponController extends Controller
         ], 201);
     }
 
+    public function show(string $id)
+    {
+        return $this->couponService->getCoupon($id, Auth::id());
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $validateDate = $request->validate([
+            'code' => 'sometimes|string|min:2|max:5',
+            'discount_percentage' => 'sometimes|numeric|min:1|max:100',
+            'start_date' => 'sometimes|date|after_or_equal:today',
+            'end_date' => 'sometimes|date|after:start_date',
+        ]);
+
+        $coupon = $this->couponService->updateCoupon($validateDate, $id, Auth::id());
+
+        return response()->json([
+            'message' => 'Coupon successfully updated!',
+            'coupon' => $coupon
+        ], 200);
+    }
 }

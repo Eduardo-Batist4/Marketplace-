@@ -58,6 +58,6 @@ class DiscountController extends Controller
 
     public function destroy(string $id)
     {
-        return response($this->discountService->deleteCategory($id, Auth::id()), 204);
+        return response($this->discountService->deleteDiscount($id, Auth::id()), 204);
     }
 }

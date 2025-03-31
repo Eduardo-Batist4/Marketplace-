@@ -44,6 +44,8 @@ class CouponService
 
     public function updateCoupon(array $data, int $id, int $user_id)
     {
+        $this->couponRepositories->getCoupon($id);
+
         if (!$this->userRepositories->userIsAdmin($user_id)) {
             throw new HttpException(401, 'You do not have authorization.');
         }
