@@ -18,16 +18,9 @@ class CartItemService
 
     public function getAllCartItems(int $id)
     {
-        $cart = $this->cartRepositories->getCartWithUserID($id);
+        $cart = $this->cartRepositories->getCartWithUserID($id)->load('cartItems');
 
-
-        $cartItems = $this->cartItemRepositories->getAllCartItems($cart->id);
-
-        if (!$cartItems) {
-            return response()->json('No items registered in the cart!');
-        }
-
-        return $cartItems;
+        return $cart;
     }
 
     public function createCartItem(array $data, int $id)
@@ -50,11 +43,6 @@ class CartItemService
             throw new HttpException(400, 'There is no stock of this quantity!');
         }
 
-        /*
-           Decreasing stock
-        */
-        $updateStock = $productPrice->stock - $data['quantity'];
-        $this->productRepositories->updateProduct(['stock' => $updateStock], $data['product_id']);
 
         return $this->cartItemRepositories->createCartItem($data);
     }
@@ -72,26 +60,12 @@ class CartItemService
             throw new HttpException(400, 'There is no stock of this quantity!');
         }
 
-        /*
-           Decreasing stock
-        */
-        $updateStock = $product->stock - $data['quantity'];
-        $this->productRepositories->updateProduct(['stock' => $updateStock], $product->id);
-
         return $this->cartItemRepositories->updateCartItem($data, $id);
     }
 
     public function deleteCartItem(string $id)
     {
         $cartItems = $this->cartItemRepositories->getCartItem($id);
-
-        $product = $this->productRepositories->getProduct($cartItems->product_id);
-
-        /*
-           Decreasing stock
-        */
-        $updateStock = $cartItems->quantity + $product->stock;
-        $this->productRepositories->updateProduct(['stock' => $updateStock], $product->id);
 
         return $this->cartItemRepositories->deleteCartItem($id);
     }
