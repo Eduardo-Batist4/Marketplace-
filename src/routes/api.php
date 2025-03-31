@@ -71,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/coupons', [CouponController::class, 'store']);
     Route::get('/coupons/{id}', [CouponController::class, 'show']);
     Route::put('/coupons/{id}', [CouponController::class, 'update']);
+    Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
+
 });
 
 Route::middleware('auth:sanctum')->get('/who/is/user', function (Request $request) {

@@ -53,4 +53,9 @@ class CouponController extends Controller
             'coupon' => $coupon
         ], 200);
     }
+
+    public function destroy(string $id)
+    {
+        return response($this->couponService->deleteCoupon($id, Auth::id()), 204);
+    }
 }
