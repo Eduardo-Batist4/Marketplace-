@@ -2,63 +2,63 @@
 
 namespace App\Services;
 
-use App\Repositories\DiscountRepositories;
+use App\Repositories\CouponRepositories;
 use App\Repositories\UserRepositories;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class DiscountService
+class CouponService
 {
 
     public function __construct(
-        protected DiscountRepositories $discountRepositories,
+        protected CouponRepositories $couponRepositories,
         protected UserRepositories $userRepositories
     ) {}
 
-    public function getAllDiscounts(int $user_id)
+    public function getAllCoupon(int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
             throw new HttpException(401, 'You do not have authorization.');
         }
 
-        return $this->discountRepositories->getAllDiscounts();
+        return $this->couponRepositories->getAllCoupons();
     }
 
-    public function createDiscount(array $data, $user_id)
+    public function createCoupon(array $data, $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
             throw new HttpException(401, 'You do not have authorization.');
         }
 
-        $discount = $this->discountRepositories->createDiscount($data);
-        return $discount;
+        $coupon = $this->couponRepositories->createCoupon($data);
+        return $coupon;
     }
 
-    public function getDiscount(int $id, int $user_id)
+    public function getCoupon(int $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
             throw new HttpException(401, 'You do not have authorization.');
         }
 
-        return $this->discountRepositories->getDiscount($id);
+        return $this->couponRepositories->getCoupon($id);
     }
 
-    public function updateDiscount(array $data, int $id, int $user_id)
+    public function updateCoupon(array $data, int $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
             throw new HttpException(401, 'You do not have authorization.');
         }
 
-        return $this->discountRepositories->updateDiscount($data, $id);
+        return $this->couponRepositories->updateCoupon($data, $id);
     }
 
-    public function deleteDiscount(int $id, int $user_id)
+    public function deleteCoupon(int $id, int $user_id)
     {
-        $this->discountRepositories->getDiscount($id);
+        $this->couponRepositories->getCoupon($id);
 
         if (!$this->userRepositories->userIsAdmin($user_id)) {
             throw new HttpException(401, 'You do not have authorization.');
         }
 
-        return $this->discountRepositories->deleteDiscount($id);
+        return $this->couponRepositories->deleteCoupon($id);
     }
 }
