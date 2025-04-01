@@ -8,7 +8,7 @@ class ProductRepositories
 {
     public function getAllProducts()
     {
-        return Product::all();
+        return Product::all()->load('discounts');
     }
 
     public function createProduct(array $data)

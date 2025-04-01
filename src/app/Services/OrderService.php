@@ -33,7 +33,14 @@ class OrderService
 
         $order = $this->ordersRepositories->createOrder($data);
 
-        return $order;
+        DB::beginTransaction();
+        try {
+
+        } catch (error) {
+
+        }
+
+        return $user->cart->cartItems;
     }
 
     // public function getCategory(int $id, int $user_id)
