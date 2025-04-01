@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Repositories\AddressRepositories;
+use App\Repositories\OrderItemRepositories;
 use App\Repositories\OrdersRepositories;
 use App\Repositories\UserRepositories;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OrderService
@@ -13,7 +15,10 @@ class OrderService
     public function __construct(
         protected OrdersRepositories $ordersRepositories,
         protected UserRepositories $userRepositories,
-        protected AddressRepositories $addressRepositories
+        protected AddressRepositories $addressRepositories,
+        protected OrderItemRepositories $orderItemRepositories,
+        protected OrderItemService $orderItemService,
+        protected ProductService $productService,
     ) {}
 
     public function getAllOrder()
@@ -30,45 +35,56 @@ class OrderService
         if (!$address) {
             throw new HttpException(400, 'Address not found!');
         }
-
+        
         $order = $this->ordersRepositories->createOrder($data);
-
+        
+        $cartItems = $user->cart->cartItems; 
+        
+        $totalCart = 0;
+        $orderItemList = [];
         DB::beginTransaction();
         try {
+            foreach ($cartItems as $item) {
+                $valueWithDiscount = $this->productHasDiscount($item->product_id, $item->unit_price);
+                
+                if (!$valueWithDiscount) {
+                    $totalCart += $item->unit_price * $item->quantity;
+                }
+                $totalCart += $valueWithDiscount * $item->quantity;
 
-        } catch (error) {
+                
+                $orderItems = $this->orderItemService->createOrderItem([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'unit_price' => $valueWithDiscount
+                ]);
 
+                $orderItemList[] = $orderItems;
+            }
+
+            $order->update(['total_amount' => $totalCart]);
+            DB::commit();
+        } catch (\Exception $error) {
+            DB::rollback();
+            throw $error;
         }
-
-        return $user->cart->cartItems;
+        return $cartItems;
     }
 
-    // public function getCategory(int $id, int $user_id)
-    // {
-    //     if (!$this->userRepositories->userIsAdmin($user_id)) {
-    //         throw new HttpException(401, 'You do not have authorization.');
-    //     }
+    public function productHasDiscount(int $id, int $unit_price)
+    {
+        $product = $this->productService->getProduct($id);
 
-    //     return $this->categoryRepositories->getCategory($id);
-    // }
+        if (!$product->discounts) {
+            return;
+        }
 
-    // public function updateCategory(array $data, int $id, int $user_id)
-    // {
-    //     if (!$this->userRepositories->userIsAdmin($user_id)) {
-    //         throw new HttpException(401, 'You do not have authorization.');
-    //     }
+        $totalDiscount = 0;
+        foreach ($product->discounts as $discount) {
+            $totalDiscount += $discount->discount_percentage; 
+        }
 
-    //     return $this->categoryRepositories->updateCategory($data, $id);
-    // }
-
-    // public function deleteCategory(int $id, int $user_id)
-    // {
-    //     $this->categoryRepositories->findCategory($id);
-
-    //     if (!$this->userRepositories->userIsAdmin($user_id)) {
-    //         throw new HttpException(401, 'You do not have authorization.');
-    //     }
-
-    //     return $this->categoryRepositories->deleteCategory($id);
-    // }
+        return  $unit_price - ($unit_price * ($totalDiscount / 100));
+    }
 }

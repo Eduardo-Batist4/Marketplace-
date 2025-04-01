@@ -2,31 +2,31 @@
 
 namespace App\Repositories;
 
-use App\Models\OrdersItem;
+use App\Models\OrderItems;
 
-class OrdersRepositories
+class OrderItemRepositories
 {
 
     public function getAllOrderItems()
     {
-        return OrdersItem::all();
+        return OrderItems::all();
     }
 
     public function createOrderItem(array $data)
     {
-        return OrdersItem::create($data);
+        return OrderItems::create($data);
     }
 
     public function getOrderItem(int $id)
     {
-        $orderItem = OrdersItem::findOrFail($id);
+        $orderItem = OrderItems::findOrFail($id);
 
         return $orderItem;
     }
 
     public function updateOrderItem(array $data, int $id)
     {
-        $orderItem = OrdersItem::findOrFail($id);
+        $orderItem = OrderItems::findOrFail($id);
 
         $orderItem->update($data);
         return $orderItem;
@@ -34,6 +34,6 @@ class OrdersRepositories
 
     public function deleteOrderItem(int $id)
     {
-        return OrdersItem::destroy($id);
+        return OrderItems::destroy($id);
     }
 }
