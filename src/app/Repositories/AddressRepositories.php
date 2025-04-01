@@ -6,6 +6,12 @@ use App\Models\Address;
 
 class AddressRepositories
 {
+    public function getAddressWithUser(int $id, int $address_id)
+    {
+        return Address::where('user_id', $id)
+            ->where('id', $address_id)    
+            ->first();
+    }
     
     public function getAllAddress(int $id) 
     {
