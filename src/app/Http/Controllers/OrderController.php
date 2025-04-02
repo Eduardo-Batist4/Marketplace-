@@ -32,4 +32,23 @@ class OrderController extends Controller
             'order' => $order
         ], 201);
     }
+
+    public function update(Request $request, int $id)
+    {
+        $validateData = $request->validate([
+            'status' => 'required|in:pending,processing,shipped,completed,canceled',
+        ]);
+
+        $order = $this->orderService->updateStatus($validateData, $id, Auth::id());
+
+        return response()->json([
+            'message' => 'Order successfully updated!',
+            'order' => $order
+        ], 200);
+    }
+
+    public function destroy(int $id)
+    {
+        return response($this->orderService->deleteOrder($id), 204);
+    }
 }

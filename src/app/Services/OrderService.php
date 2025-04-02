@@ -127,4 +127,20 @@ class OrderService
 
         return $totalPrice - ($totalPrice * ($coupon->discount_percentage / 100));
     }
+
+    public function updateStatus(array $data, int $id, int $user_id)
+    {
+        if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
+            throw new HttpException(401, 'You do not have authorization.'); 
+        }
+        
+        return $this->ordersRepositories->updateOrder($data, $id);
+    }
+
+    public function deleteOrder(int $id)
+    {
+        $this->ordersRepositories->getOrder($id);
+
+        return $this->ordersRepositories->deleteOrder($id);
+    }
 }
