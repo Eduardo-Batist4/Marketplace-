@@ -18,7 +18,7 @@ class ProductRepositories
 
     public function getProduct(int $id)
     {
-        return Product::findOrFail($id);
+        return Product::findOrFail($id)->load('discounts');
     }
 
     public function updateProduct(array $data, int $id)
