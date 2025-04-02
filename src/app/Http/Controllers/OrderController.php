@@ -21,7 +21,7 @@ class OrderController extends Controller
         $validateData = $request->validate([
             'user_id' => 'sometimes|numeric|exists:users,id',
             'address_id' => 'required|numeric|exists:addresses,id',
-            'coupon_id' => 'sometimes|string|max:5',
+            'coupon_id' => 'sometimes|numeric',
             'status' => 'sometimes|in:pending,processing,shipped,completed,canceled',
         ]);
 

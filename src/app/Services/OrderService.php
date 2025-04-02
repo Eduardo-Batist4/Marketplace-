@@ -50,7 +50,6 @@ class OrderService
             throw new HttpException(400, 'No items in the cart');
         }
 
-
         DB::beginTransaction();
         try {
             /*
@@ -73,8 +72,7 @@ class OrderService
 
                 $totalCart += $productPrice * $item->quantity;
 
-                
-                $orderItems = $this->orderItemService->createOrderItem([
+                $this->orderItemService->createOrderItem([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
@@ -86,10 +84,12 @@ class OrderService
             /*
                 Updated total_amount from order table
             */
-            $order->update(['total_amount' => $this->applyCoupon($totalCart, $data['coupon_id'])]);
+            $total_amount = $this->applyCoupon($totalCart, $data['coupon_id'] ?? null);
+
+            $order->update(['total_amount' => $total_amount]);
+
             DB::commit();
             return $order;
-
         } catch (\Exception $error) {
             DB::rollback();
             throw $error;            
@@ -113,13 +113,18 @@ class OrderService
         return  $unit_price - ($unit_price * ($totalDiscount / 100));
     }
 
-    public function applyCoupon(int $totalPrice, int $id) 
+    public function applyCoupon(int $totalPrice, ?int $id) 
     {
+        if (!$id) {
+            return $totalPrice;
+        }
+
         $coupon = $this->couponRepositories->getCoupon($id);
 
-        if ($coupon) {
-            return $totalPrice - ($totalPrice * ($coupon->discount_percentage / 100));
+        if (!$coupon) {
+            return $totalPrice;
         }
-        return $totalPrice;
+
+        return $totalPrice - ($totalPrice * ($coupon->discount_percentage / 100));
     }
 }
