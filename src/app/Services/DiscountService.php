@@ -29,6 +29,20 @@ class DiscountService
             throw new HttpException(401, 'You do not have authorization.');
         }
 
+        /*
+            Return a list of all the discounts for a product
+        */
+        $allDiscountsForAProduct = $this->discountRepositories->getAllDiscountForProduct($data['product_id']);
+
+
+        $DiscountLimit = 0;
+        foreach ($allDiscountsForAProduct as $limit) {
+            $DiscountLimit += $limit->discount_percentage;
+        }
+        if (($DiscountLimit + $data['discount_percentage']) > 60) {
+            throw new HttpException(400, 'Limit for a single product is 60%!');
+        }
+
         $discount = $this->discountRepositories->createDiscount($data);
         return $discount;
     }

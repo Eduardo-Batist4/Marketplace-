@@ -11,6 +11,11 @@ class DiscountRepositories
         return Discount::all();
     }
 
+    public function getAllDiscountForProduct($product_id)
+    {
+        return Discount::where('product_id', $product_id)->get();
+    }
+
     public function createDiscount(array $data)
     {
         return Discount::create($data);
