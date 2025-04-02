@@ -33,9 +33,12 @@ class DiscountService
             Return a list of all the discounts for a product
         */
         $allDiscountsForAProduct = $this->discountRepositories->getAllDiscountForProduct($data['product_id']);
-
-
+        
+        /*
+            I go through all the existing discounts and check if it will go over 60%
+        */
         $DiscountLimit = 0;
+        
         foreach ($allDiscountsForAProduct as $limit) {
             $DiscountLimit += $limit->discount_percentage;
         }
@@ -44,6 +47,7 @@ class DiscountService
         }
 
         $discount = $this->discountRepositories->createDiscount($data);
+
         return $discount;
     }
 
