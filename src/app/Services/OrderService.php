@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\AddressRepositories;
 use App\Repositories\OrdersRepositories;
+use App\Repositories\ProductRepositories;
 use App\Repositories\UserRepositories;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -13,7 +14,8 @@ class OrderService
     public function __construct(
         protected OrdersRepositories $ordersRepositories,
         protected UserRepositories $userRepositories,
-        protected AddressRepositories $addressRepositories
+        protected AddressRepositories $addressRepositories,
+        protected ProductRepositories $productRepositories
     ) {}
 
     public function getAllOrder()
@@ -33,42 +35,8 @@ class OrderService
 
         $order = $this->ordersRepositories->createOrder($data);
 
-        DB::beginTransaction();
-        try {
 
-        } catch (error) {
-
-        }
 
         return $user->cart->cartItems;
     }
-
-    // public function getCategory(int $id, int $user_id)
-    // {
-    //     if (!$this->userRepositories->userIsAdmin($user_id)) {
-    //         throw new HttpException(401, 'You do not have authorization.');
-    //     }
-
-    //     return $this->categoryRepositories->getCategory($id);
-    // }
-
-    // public function updateCategory(array $data, int $id, int $user_id)
-    // {
-    //     if (!$this->userRepositories->userIsAdmin($user_id)) {
-    //         throw new HttpException(401, 'You do not have authorization.');
-    //     }
-
-    //     return $this->categoryRepositories->updateCategory($data, $id);
-    // }
-
-    // public function deleteCategory(int $id, int $user_id)
-    // {
-    //     $this->categoryRepositories->findCategory($id);
-
-    //     if (!$this->userRepositories->userIsAdmin($user_id)) {
-    //         throw new HttpException(401, 'You do not have authorization.');
-    //     }
-
-    //     return $this->categoryRepositories->deleteCategory($id);
-    // }
 }
