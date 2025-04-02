@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\CartItem;
 use App\Models\Coupon;
 use App\Repositories\AddressRepositories;
 use App\Repositories\CouponRepositories;
@@ -44,18 +45,21 @@ class OrderService
             throw new HttpException(400, 'Address not found!');
         }
         
-        /*
-            Create Order
-        */
-        $order = $this->ordersRepositories->createOrder($data);
-
-
         $cartItems = $user->cart->cartItems; // Get all items of the cart 
-        $totalCart = 0; // Total cart price
+        if($cartItems->isEmpty()) {
+            throw new HttpException(400, 'No items in the cart');
+        }
 
 
         DB::beginTransaction();
         try {
+            /*
+                Create Order
+            */
+            $order = $this->ordersRepositories->createOrder($data);
+    
+            $cartItems = $user->cart->cartItems; // Get all items of the cart 
+            $totalCart = 0; // Total cart price
 
             /*
                 Scroll through all the items in the cart
@@ -65,20 +69,16 @@ class OrderService
                 /*
                     Check if the products are discounted
                 */
-                $valueWithDiscount = $this->productHasDiscount($item->product_id, $item->unit_price);
-                
-                if (!$valueWithDiscount) {
-                    $totalCart += $item->unit_price * $item->quantity;
-                }
+                $productPrice = $this->productHasDiscount($item->product_id, $item->unit_price);
 
-                $totalCart += $valueWithDiscount * $item->quantity;
+                $totalCart += $productPrice * $item->quantity;
 
                 
                 $orderItems = $this->orderItemService->createOrderItem([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'unit_price' => $valueWithDiscount
+                    'unit_price' => $productPrice
                 ]);
 
             }
@@ -86,15 +86,15 @@ class OrderService
             /*
                 Updated total_amount from order table
             */
-            $order->update(['total_amount' => $totalCart]);
+            $order->update(['total_amount' => $this->applyCoupon($totalCart, $data['coupon_id'])]);
             DB::commit();
+            return $order;
 
         } catch (\Exception $error) {
             DB::rollback();
             throw $error;            
         }
 
-        return $orderItems;
     }
 
     public function productHasDiscount(int $id, int $unit_price)
@@ -102,7 +102,7 @@ class OrderService
         $product = $this->productService->getProduct($id);
 
         if (!$product->discounts) {
-            return;
+            return $product->unit_price;
         }
 
         $totalDiscount = 0;
@@ -113,10 +113,13 @@ class OrderService
         return  $unit_price - ($unit_price * ($totalDiscount / 100));
     }
 
-    public function orderHasCoupon(int $id) 
+    public function applyCoupon(int $totalPrice, int $id) 
     {
         $coupon = $this->couponRepositories->getCoupon($id);
 
-        return $coupon->discount_percentage;
+        if ($coupon) {
+            return $totalPrice - ($totalPrice * ($coupon->discount_percentage / 100));
+        }
+        return $totalPrice;
     }
 }
