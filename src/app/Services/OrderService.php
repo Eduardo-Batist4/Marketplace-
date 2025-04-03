@@ -42,12 +42,12 @@ class OrderService
         */
         $address = $this->addressRepositories->getAddressWithUser($user->id, $data['address_id']);
         if (!$address) {
-            throw new HttpException(400, 'Address not found!');
+            throw new HttpException(404, 'Address not found!');
         }
         
         $cartItems = $user->cart->cartItems; // Get all items of the cart 
         if($cartItems->isEmpty()) {
-            throw new HttpException(400, 'No items in the cart');
+            throw new HttpException(404, 'No items in the cart');
         }
 
         DB::beginTransaction();
@@ -131,7 +131,7 @@ class OrderService
     public function updateStatus(array $data, int $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
         
         return $this->ordersRepositories->updateOrder($data, $id);

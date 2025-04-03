@@ -28,7 +28,7 @@ class ProductService
     public function createProduct(array $data, $user_id)
     {
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
 
         return $this->productRepositories->createProduct($data);
@@ -42,7 +42,7 @@ class ProductService
     public function updateProduct(array $data, string $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
 
         return $this->productRepositories->updateProduct($data, $id);
@@ -53,7 +53,7 @@ class ProductService
         $this->productRepositories->getProduct($id);
 
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
                 
         return $this->productRepositories->deleteProduct($id);

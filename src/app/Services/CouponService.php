@@ -17,7 +17,7 @@ class CouponService
     public function getAllCoupon(int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.');
+            throw new HttpException(403, 'Access denied.');
         }
 
         return $this->couponRepositories->getAllCoupons();
@@ -26,7 +26,7 @@ class CouponService
     public function createCoupon(array $data, $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.');
+            throw new HttpException(403, 'Access denied.');
         }
 
         $coupon = $this->couponRepositories->createCoupon($data);
@@ -36,7 +36,7 @@ class CouponService
     public function getCoupon(int $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.');
+            throw new HttpException(403, 'Access denied.');
         }
 
         return $this->couponRepositories->getCoupon($id);
@@ -47,7 +47,7 @@ class CouponService
         $this->couponRepositories->getCoupon($id);
 
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.');
+            throw new HttpException(403, 'Access denied.');
         }
 
         return $this->couponRepositories->updateCoupon($data, $id);
@@ -58,7 +58,7 @@ class CouponService
         $this->couponRepositories->getCoupon($id);
 
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.');
+            throw new HttpException(403, 'Access denied.');
         }
 
         return $this->couponRepositories->deleteCoupon($id);

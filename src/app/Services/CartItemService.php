@@ -40,7 +40,7 @@ class CartItemService
            Checking stock
         */
         if ($data['quantity'] > $productPrice->stock) {
-            throw new HttpException(400, 'There is no stock of this quantity!');
+            throw new HttpException(422, 'Quantity exceeds available stock.');
         }
 
 
@@ -57,7 +57,7 @@ class CartItemService
            Checking stock
         */
         if ($data['quantity'] > $product->stock) {
-            throw new HttpException(400, 'There is no stock of this quantity!');
+            throw new HttpException(422, 'Quantity exceeds available stock.');
         }
 
         return $this->cartItemRepositories->updateCartItem($data, $id);

@@ -28,7 +28,7 @@ class UserController extends Controller
         $user = $this->userService->updateUser($validateData, $id, Auth::id());
         
         return response()->json([
-            'message' => 'User successfully updated!',
+            'message' => 'Successfully updated!',
             'user' => $user
         ], 200);
     }

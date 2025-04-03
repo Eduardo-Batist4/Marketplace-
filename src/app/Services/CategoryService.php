@@ -17,7 +17,7 @@ class CategoryService
     public function getAllCategories(int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
 
         return $this->categoryRepositories->getAllCategory();
@@ -26,7 +26,7 @@ class CategoryService
     public function createCategory(array $data, $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
 
         $category = $this->categoryRepositories->createCategory($data);
@@ -36,7 +36,7 @@ class CategoryService
     public function getCategory(int $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
 
         return $this->categoryRepositories->getCategory($id);
@@ -45,7 +45,7 @@ class CategoryService
     public function updateCategory(array $data, int $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
 
         return $this->categoryRepositories->updateCategory($data, $id);
@@ -56,7 +56,7 @@ class CategoryService
         $this->categoryRepositories->findCategory($id);
 
         if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(401, 'You do not have authorization.'); 
+            throw new HttpException(403, 'Access denied.'); 
         }
 
         return $this->categoryRepositories->deleteCategory($id);

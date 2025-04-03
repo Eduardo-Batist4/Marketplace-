@@ -15,7 +15,7 @@ class AddressService
         $address = $this->addressRepositories->getAllAddress($id);
         
         if (!$address) {
-            return response()->json('No registered address!');
+            return response()->json('No records found.', 200);
         }
 
         return $address;
@@ -31,7 +31,7 @@ class AddressService
         $address = $this->addressRepositories->getAddress($id);
 
         if($address->user_id != $user_id) {
-            throw new HttpException(401, 'You do not have permission to modify this resource.');
+            throw new HttpException(403, 'Access denied.');
         }
 
         return $this->addressRepositories->updateAddress($data, $id);
@@ -42,7 +42,7 @@ class AddressService
         $address = $this->addressRepositories->getAddress($id);
 
         if($address->user_id != $user_id) {
-            throw new HttpException(401, 'You do not have permission to delete this address.');
+            throw new HttpException(403, 'Access denied.');
         }
         
         return $this->addressRepositories->deleteAddress($id);
