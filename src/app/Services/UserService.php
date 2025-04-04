@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Support\Str;
 
 class UserService
 {
@@ -64,7 +65,9 @@ class UserService
             Storage::delete('public/' . $user->image_path);
         }
 
-        $path = $request->file('image')->store('users', 'public');
+        $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+
+        $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
 
         return $this->userRepositories->updateUser(['image_path' => $path], $id);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -27,6 +28,19 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Successfully updated!',
             'user' => $user
+        ], 200);
+    }
+
+    public function updateImage(Request $request, int $id)
+    {
+        $request->validate([
+            'image_path' => 'required|image|mimes:jpeg,png,jpg,|max:2048'
+        ]);
+
+        $this->userService->updateUserImage($request, $id, Auth::id());
+
+        return response()->json([
+            'message' => 'Successfully updated!',
         ], 200);
     }
 
