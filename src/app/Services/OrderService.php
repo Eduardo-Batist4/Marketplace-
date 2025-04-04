@@ -2,12 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\CartItem;
-use App\Models\Coupon;
 use App\Repositories\AddressRepositories;
 use App\Repositories\CouponRepositories;
 use App\Repositories\OrdersRepositories;
-use App\Repositories\ProductRepositories;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -56,8 +53,7 @@ class OrderService
                 Create Order
             */
             $order = $this->ordersRepositories->createOrder($data);
-    
-            $cartItems = $user->cart->cartItems; // Get all items of the cart 
+
             $totalCart = 0; // Total cart price
 
             /*

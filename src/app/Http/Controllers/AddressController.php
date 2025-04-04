@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAddressRequest;
+use App\Http\Requests\UpdateAddressRequest;
 use App\Services\AddressService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
@@ -18,37 +19,23 @@ class AddressController extends Controller
         return response()->json($addresses, 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreAddressRequest $request)
     {
-        $validateData = $request->validate([
-            'street' => 'required|string|min:5|max:200',
-            'number' => 'required|numeric',
-            'zip' => 'required|string|min:7',
-            'city' => 'required|string|min:4',
-            'state' => 'required|string|min:4',
-            'country' => 'required|string|min:4'
-        ]);
+        $validateData = $request->validated();
 
         $validateData['user_id'] = Auth::id();
 
         $address = $this->addressService->createAddress($validateData);
 
         return response()->json([
-            'message' => 'Address successfully created!',
+            'message' => 'Successfully created!',
             'address' => $address
         ], 201);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateAddressRequest $request, string $id)
     {
-        $validateData = $request->validate([
-            'street' => 'sometimes|string|min:5|max:200',
-            'number' => 'sometimes|numeric',
-            'zip' => 'sometimes|string|min:7',
-            'city' => 'sometimes|string|min:4',
-            'state' => 'sometimes|string|min:4',
-            'country' => 'sometimes|string|min:4'
-        ]);
+        $validateData = $request->validated();
 
         $validateData['user_id'] = Auth::id();
 

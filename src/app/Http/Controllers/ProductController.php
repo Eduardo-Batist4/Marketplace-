@@ -48,6 +48,10 @@ class ProductController extends Controller
 
     public function destroy(string $id)
     {
-        return response($this->productService->deleteProduct($id, Auth::id()), 204);
+        $this->productService->deleteProduct($id, Auth::id());
+        
+        return response()->json([
+            'message' => 'Successfully deleted!',
+        ], 204); 
     }
 }

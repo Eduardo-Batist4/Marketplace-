@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\UpdateOrderRequest;
 use App\Services\OrderService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -16,39 +17,36 @@ class OrderController extends Controller
         return $this->orderService->getAllOrder();
     }
 
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
-        $validateData = $request->validate([
-            'user_id' => 'sometimes|numeric|exists:users,id',
-            'address_id' => 'required|numeric|exists:addresses,id',
-            'coupon_id' => 'sometimes|numeric',
-            'status' => 'sometimes|in:pending,processing,shipped,completed,canceled',
-        ]);
+        $validateData = $request->validated();
 
         $order = $this->orderService->createOrder($validateData, Auth::id());
 
         return response()->json([
-            'message' => 'Order successfully placed!',
+            'message' => 'Successfully placed!',
             'order' => $order
         ], 201);
     }
 
-    public function update(Request $request, int $id)
+    public function update(UpdateOrderRequest $request, int $id)
     {
-        $validateData = $request->validate([
-            'status' => 'required|in:pending,processing,shipped,completed,canceled',
-        ]);
+        $validateData = $request->validated();
 
         $order = $this->orderService->updateStatus($validateData, $id, Auth::id());
 
         return response()->json([
-            'message' => 'Order successfully updated!',
+            'message' => 'Successfully updated!',
             'order' => $order
         ], 200);
     }
 
     public function destroy(int $id)
     {
-        return response($this->orderService->deleteOrder($id), 204);
+        $this->orderService->deleteOrder($id);
+
+        return response()->json([
+            'message' => 'Successfully deleted!',
+        ], 204);
     }
 }

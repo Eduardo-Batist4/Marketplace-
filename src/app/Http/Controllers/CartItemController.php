@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCartItemRequest;
+use App\Http\Requests\UpdateCartItemRequest;
 use App\Services\CartItemService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartItemController extends Controller
@@ -15,26 +16,21 @@ class CartItemController extends Controller
         return $this->cartItemService->getAllCartItems(Auth::id());
     }
 
-    public function store(Request $request)
+    public function store(StoreCartItemRequest $request)
     {
-        $validateDate = $request->validate([
-            'product_id' => 'required|numeric|exists:products,id',
-            'quantity' => 'required|numeric',
-        ]);
+        $validateDate = $request->validated();
 
         $cartItem = $this->cartItemService->createCartItem($validateDate, Auth::id());
 
         return response()->json([
-            'message' => 'items successfully added to cart!',
+            'message' => 'Successfully added to cart!',
             'cartItem' => $cartItem
         ], 201);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateCartItemRequest $request, string $id)
     {
-        $validateDate = $request->validate([
-            'quantity' => 'required|numeric',
-        ]);
+        $validateDate = $request->validated();
 
         $category = $this->cartItemService->updateCartItem($validateDate, $id);
 
@@ -43,6 +39,10 @@ class CartItemController extends Controller
 
     public function destroy(string $id)
     {
-        return response($this->cartItemService->deleteCartItem($id), 204);
+        $this->cartItemService->deleteCartItem($id);
+
+        return response()->json([
+            'message' => 'Successfully deleted!',
+        ], 204);  
     }
 }
