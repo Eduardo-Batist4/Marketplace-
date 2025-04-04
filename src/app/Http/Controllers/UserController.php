@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
-use Illuminate\Http\Request;
+use Illuminate\Http\Requests\User;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -18,12 +19,9 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function update(Request $request, $id) 
+    public function update(UpdateUserRequest $request, $id) 
     {
-        $validateData = $request->validate([
-            'name' => 'sometimes|string|min:4|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email',
-        ]);
+        $validateData = $request->validated();
         
         $user = $this->userService->updateUser($validateData, $id, Auth::id());
         
@@ -38,7 +36,7 @@ class UserController extends Controller
         $this->userService->deleteUser($id, Auth::id());
 
         return response()->json([
-            'message' => 'User successfully deleted!',
-        ], 200);
+            'message' => 'Successfully deleted!',
+        ], 204);
     }
 }

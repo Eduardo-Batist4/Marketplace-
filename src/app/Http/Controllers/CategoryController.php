@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Services\CategoryService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
@@ -16,17 +17,14 @@ class CategoryController extends Controller
         return $this->categoryService->getAllCategories(Auth::id());
     }
 
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validateDate = $request->validate([
-            'name' => 'required|string|min:4|max:100',
-            'description' => 'sometimes|string|max:255'
-        ]);
+        $validateDate = $request->validated();
 
         $category = $this->categoryService->createCategory($validateDate, Auth::id());
 
         return response()->json([
-            'message' => 'Category successfully created!',
+            'message' => 'Successfully created!',
             'category' => $category
         ], 201);
     }
@@ -36,23 +34,23 @@ class CategoryController extends Controller
         return $this->categoryService->getCategory($id, Auth::id());
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, string $id)
     {
-        $validateDate = $request->validate([
-            'name' => 'sometimes|string|min:4|max:100',
-            'description' => 'sometimes|string|max:255'
-        ]);
+        $validateDate = $request->validated();
 
         $category = $this->categoryService->updateCategory($validateDate, $id, Auth::id());
 
         return response()->json([
-            'message' => 'Category successfully updated!',
+            'message' => 'Successfully updated!',
             'category' => $category
         ], 200);
     }
 
     public function destroy(string $id)
     {
-        return response($this->categoryService->deleteCategory($id, Auth::id()), 204);
+        response($this->categoryService->deleteCategory($id, Auth::id()), 204);
+        return response()->json([
+            'message' => 'Successfully deleted!',
+        ], 204);  
     }
 }

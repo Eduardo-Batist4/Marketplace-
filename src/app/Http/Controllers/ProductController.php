@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Services\ProductService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
@@ -16,21 +17,14 @@ class ProductController extends Controller
         return $this->productService->getAllProducts();
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $validateData = $request->validate([
-            'name' => 'required|string|min:4|max:200',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
-            'category_id' => 'required|numeric|exists:categories,id',
-            'image_path' => 'sometimes|string',
-            'description' => 'sometimes|string|max:255' 
-        ]);
+        $validateData = $request->validated();
 
         $product = $this->productService->createProduct($validateData, Auth::id());
 
         return response()->json([
-            'message' => 'Product successfully created!',
+            'message' => 'Successfully created!',
             'product' => $product
         ], 201);
     }
@@ -40,21 +34,14 @@ class ProductController extends Controller
         return $this->productService->getProduct($id);
     }
 
-    public function update(Request $request, string $id) 
+    public function update(UpdateProductRequest $request, string $id) 
     {
-        $validateData = $request->validate([
-            'name' => 'sometimes|string|min:4|max:200',
-            'price' => 'sometimes|numeric',
-            'stock' => 'sometimes|numeric',
-            'category_id' => 'sometimes|numeric|exists:categories,id',
-            'image_path' => 'sometimes|string',
-            'description' => 'sometimes|string|max:255' 
-        ]);
+        $validateData = $request->validated();
 
         $product = $this->productService->updateProduct($validateData, $id, Auth::id());
 
         return response()->json([
-            'message' => 'Product successfully updated!',
+            'message' => 'Successfully updated!',
             'product' => $product
         ], 200);
     }

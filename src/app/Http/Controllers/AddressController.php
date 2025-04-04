@@ -55,13 +55,17 @@ class AddressController extends Controller
         $address = $this->addressService->updateAddress($validateData, $id, Auth::id());
 
         return response()->json([
-            'message' => 'Address successfully updated!',
+            'message' => 'Successfully updated!',
             'address' => $address
         ], 200);
     }
 
     public function destroy(string $id)
     {
-        return $this->addressService->deleteAddress($id, Auth::id());
+        $this->addressService->deleteAddress($id, Auth::id());
+
+        return response()->json([
+            'message' => 'Successfully deleted!',
+        ], 204); 
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Services\CartService;
 use App\Services\UserService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -12,12 +13,9 @@ class AuthController extends Controller
 
     public function __construct(protected UserService $userServices, protected CartService $cartService) {}
 
-    public function login(Request $request) 
+    public function login(LoginRequest $request) 
     {
-        $validateData = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string' 
-        ]);
+        $validateData = $request->validated();
 
         $user = $this->userServices->findUserWithEmail($validateData['email']);
 
@@ -35,16 +33,12 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function register(Request $request) 
+    public function register(RegisterRequest $request) 
     {
         /*
             Regex exige uma letra (Maiuscula, MInuscula) e um numero
         */
-        $validateData = $request->validate([
-            'name' => 'required|string|min:4|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/' 
-        ]);
+        $validateData = $request->validated();
 
         $user = $this->userServices->createUser($validateData);
 
