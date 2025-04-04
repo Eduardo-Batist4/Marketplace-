@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Repositories\ProductRepositories;
 use App\Repositories\UserRepositories;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Support\Str;
 
 class ProductService
 {
@@ -25,11 +27,19 @@ class ProductService
         return $product;
     }
 
-    public function createProduct(array $data, $user_id)
+    public function createProduct($request, $user_id)
     {
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
             throw new HttpException(403, 'Access denied.'); 
         }
+
+        $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+
+        $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
+
+        $data = $request->all();
+
+        $data['image_path'] = $path;
 
         return $this->productRepositories->createProduct($data);
     }

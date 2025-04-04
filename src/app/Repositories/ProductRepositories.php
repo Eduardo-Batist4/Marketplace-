@@ -11,7 +11,7 @@ class ProductRepositories
         return Product::all()->load('discounts');
     }
 
-    public function createProduct(array $data)
+    public function createProduct($data)
     {
         return Product::create($data);
     }

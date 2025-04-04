@@ -43,7 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-    Route::put('/users/{id}/upload-image', [UserController::class, 'updateImage']);
+    // Update User Image
+    Route::put('/users/{id}/update-image', [UserController::class, 'updateImage']);
 
     // Address
     Route::get('/addresses', [AddressController::class, 'index']);

@@ -19,9 +19,9 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $validateData = $request->validated();
+        $request->validated();
 
-        $product = $this->productService->createProduct($validateData, Auth::id());
+        $product = $this->productService->createProduct($request, Auth::id());
 
         return response()->json([
             'message' => 'Successfully created!',

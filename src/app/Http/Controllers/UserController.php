@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -31,11 +31,9 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function updateImage(Request $request, int $id)
+    public function updateImage(UpdateUserImageRequest $request, int $id)
     {
-        $request->validate([
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,|max:2048'
-        ]);
+        $request->validated();
 
         $this->userService->updateUserImage($request, $id, Auth::id());
 
