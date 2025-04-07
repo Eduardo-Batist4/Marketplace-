@@ -16,11 +16,14 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        
+        static $counter = 1;
+
         return [
             'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'email' => 'usuario' . $counter++ . '@example.com',
             'email_verified_at' => now(),
-            'password' => bcrypt('senha123'),
+            'password' => bcrypt('Senha123'),
             'remember_token' => null
         ];
     }

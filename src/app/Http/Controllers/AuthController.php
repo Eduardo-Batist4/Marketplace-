@@ -35,9 +35,6 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request) 
     {
-        /*
-            Regex exige uma letra (Maiuscula, MInuscula) e um numero
-        */
         $validateData = $request->validated();
 
         $user = $this->userServices->createUser($validateData);

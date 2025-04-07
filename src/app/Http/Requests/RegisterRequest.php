@@ -21,6 +21,9 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
+        /*
+            Regex exige uma letra (Maiuscula, MInuscula) e um numero
+        */
         return [
             'name' => 'required|string|min:4|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
