@@ -22,7 +22,7 @@ class StoreCouponRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string|min:2|max:5',
+            'code' => 'required|string|min:2|max:6',
             'discount_percentage' => 'required|numeric|min:1|max:100',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
