@@ -16,6 +16,17 @@ class AddressSeeder extends Seeder
 
     public function run(): void
     {
-        Address::factory(7)->create();
+
+        Address::create([
+            'user_id' => 1,
+            'street' => 'Rua do Admin',
+            'number' => 215,
+            'zip' => '87224-4435',
+            'city' => 'Detroit',
+            'state' => 'Michigan',
+            'country' => 'EUA'
+        ]);
+
+        Address::factory(5)->create();
     }
 }

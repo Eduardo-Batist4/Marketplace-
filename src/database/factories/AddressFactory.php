@@ -14,23 +14,11 @@ class AddressFactory extends Factory
      *
      * @return array<string, mixed>
      */
-
-    static function randomId()
-    {
-        $count = 1;
-
-        if ($count == 4) {
-            $count = 2;
-        }
-        $count++;
-        
-        return $count;
-    } 
     
     public function definition(): array
     {
         return [
-            'user_id' => random_int(1,4),
+            'user_id' => random_int(2,4),
             'street' => fake()->streetAddress(),
             'number' => random_int(100, 1000),
             'zip' => fake()->postcode(),
