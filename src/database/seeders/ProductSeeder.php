@@ -21,6 +21,8 @@ class ProductSeeder extends Seeder
                 'category_id' => 1,
                 'image_path' => null,
                 'description' => 'Camiseta do Flamengo, vermelha e preta, com escudo bordado e design esportivo.',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Monitor BenQ ZOWIE 400Hz',
@@ -29,6 +31,8 @@ class ProductSeeder extends Seeder
                 'category_id' => 2,
                 'image_path' => null,
                 'description' => 'Monitor BenQ 400Hz, ultrarrápido, imagem fluida, ideal para jogos competitivos.',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Geladeira Eletrolux',
@@ -37,6 +41,8 @@ class ProductSeeder extends Seeder
                 'category_id' => 3,
                 'image_path' => null,
                 'description' => 'Geladeira Electrolux Frost Free Inverter 590L AutoSense 3 Portas Cor Inox Look (IM8S) (220 Volts).',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ]);
     }
