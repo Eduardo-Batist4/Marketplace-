@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\AddressRepositories;
+use App\Repositories\CartItemRepositories;
 use App\Repositories\CouponRepositories;
 use App\Repositories\OrdersRepositories;
 use App\Repositories\UserRepositories;
@@ -18,7 +19,8 @@ class OrderService
         protected AddressRepositories $addressRepositories,
         protected OrderItemService $orderItemService,
         protected ProductService $productService,
-        protected CouponRepositories $couponRepositories
+        protected CouponRepositories $couponRepositories,
+        protected CartItemRepositories $cartItemRepositories
     ) {}
 
     public function getAllOrder()
@@ -85,6 +87,8 @@ class OrderService
             $order->update(['total_amount' => $total_amount]);
 
             DB::commit();
+            
+            $this->cartItemRepositories->deleteAllItems();
             return $order;
         } catch (\Exception $error) {
             DB::rollback();

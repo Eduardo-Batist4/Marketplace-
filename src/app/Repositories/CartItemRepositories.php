@@ -30,6 +30,11 @@ class CartItemRepositories
         return $cartItem;
     }
 
+    public function deleteAllItems()
+    {
+        return CartItem::truncate();
+    }
+
     public function deleteCartItem(int $id) 
     {
         return CartItem::destroy($id);
