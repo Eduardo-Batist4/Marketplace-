@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendOrderStatusEmail;
 use App\Repositories\AddressRepositories;
 use App\Repositories\CartItemRepositories;
 use App\Repositories\CouponRepositories;
@@ -130,10 +131,16 @@ class OrderService
 
     public function updateStatus(array $data, int $id, int $user_id)
     {
+        
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
             throw new HttpException(403, 'Access denied.'); 
         }
         
+        $user = $this->userRepositories->getUser($user_id);
+        $order = $this->ordersRepositories->getOrder($id);
+
+        SendOrderStatusEmail::dispatch($user->email, $order);
+
         return $this->ordersRepositories->updateOrder($data, $id);
     }
 
