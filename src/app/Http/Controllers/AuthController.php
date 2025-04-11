@@ -7,6 +7,8 @@ use App\Http\Requests\RegisterRequest;
 use App\Services\CartService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -36,6 +38,12 @@ class AuthController extends Controller
     public function register(RegisterRequest $request) 
     {
         $validateData = $request->validated();
+
+        $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+
+        $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
+
+        $validateData['image_path'] = $path;
 
         $user = $this->userServices->createUser($validateData);
 

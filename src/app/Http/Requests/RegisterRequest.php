@@ -27,7 +27,8 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string|min:4|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/' 
+            'password' => 'required|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/',
+            'image_path' => 'required|image|mimes:jpeg,png,jpg,|max:2048'
         ];
     }
 }
