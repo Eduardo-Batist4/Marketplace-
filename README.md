@@ -36,6 +36,16 @@ Clonar o Projeto
 "saia da pasta"
     cd ..
 ```
+Para rodar esse projeto, você tem que configurar suas variaveis de ambiente no arquivo .env
+
+```bash
+    DB_CONNECTION=mysql
+    DB_HOST=mysql
+    DB_PORT=0000
+    DB_DATABASE=nome_do_banco
+    DB_USERNAME=root
+    DB_PASSWORD=root
+```
 5. Acessar container PHP:
 ```bash
     docker compose exec php sh
@@ -77,17 +87,3 @@ Senha: root
 ## Rotas
 
 [Ver todas as rotas](routes.md)
-
-## Variáveis de Ambiente
-
-Para rodar esse projeto, você tem que configurar suas variaveis de ambiente no arquivo .env
-
-```bash
-    DB_CONNECTION=mysql
-    DB_HOST=mysql
-    DB_PORT=0000
-    DB_DATABASE=nome_do_banco
-    DB_USERNAME=root
-    DB_PASSWORD=root
-```
-
