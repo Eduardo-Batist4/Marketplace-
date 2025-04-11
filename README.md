@@ -74,8 +74,9 @@ Usuário: root
  
 Senha: root
 
+## Rotas
 
-
+[Ver todas as rotas](routes.md)
 
 ## Variáveis de Ambiente
 
