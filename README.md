@@ -87,3 +87,7 @@ Senha: root
 ## Rotas
 
 [Ver todas as rotas](routes.md)
+
+## Estrutura do Banco de Dados
+
+![](./src/public/images/DB_Marketplace.jpg)
