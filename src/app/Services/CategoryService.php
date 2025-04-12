@@ -6,58 +6,35 @@ use App\Repositories\CategoryRepositories;
 use App\Repositories\UserRepositories;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class CategoryService 
+class CategoryService
 {
 
-    public function __construct(protected CategoryRepositories $categoryRepositories, protected UserRepositories $userRepositories)
-    {
-        
-    }
+    public function __construct(protected CategoryRepositories $categoryRepositories, protected UserRepositories $userRepositories) {}
 
-    public function getAllCategories(int $user_id)
+    public function getAllCategories()
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
-
         return $this->categoryRepositories->getAllCategory();
     }
 
-    public function createCategory(array $data, $user_id)
+    public function createCategory(array $data)
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
-
         $category = $this->categoryRepositories->createCategory($data);
         return $category;
     }
 
-    public function getCategory(int $id, int $user_id)
+    public function getCategory(int $id)
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
-
         return $this->categoryRepositories->getCategory($id);
     }
 
-    public function updateCategory(array $data, int $id, int $user_id)
+    public function updateCategory(array $data, int $id)
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
-
         return $this->categoryRepositories->updateCategory($data, $id);
     }
 
-    public function deleteCategory(int $id, int $user_id)
+    public function deleteCategory(int $id)
     {
         $this->categoryRepositories->findCategory($id);
-
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
 
         return $this->categoryRepositories->deleteCategory($id);
     }

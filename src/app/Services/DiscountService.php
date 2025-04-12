@@ -14,21 +14,13 @@ class DiscountService
         protected UserRepositories $userRepositories
     ) {}
 
-    public function getAllDiscounts(int $user_id)
+    public function getAllDiscounts()
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.');
-        }
-
         return $this->discountRepositories->getAllDiscounts();
     }
 
-    public function createDiscount(array $data, $user_id)
+    public function createDiscount(array $data)
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.');
-        }
-
         /*
             Return a list of all the discounts for a product
         */
@@ -51,32 +43,19 @@ class DiscountService
         return $discount;
     }
 
-    public function getDiscount(int $id, int $user_id)
+    public function getDiscount(int $id)
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.');
-        }
-
         return $this->discountRepositories->getDiscount($id);
     }
 
-    public function updateDiscount(array $data, int $id, int $user_id)
+    public function updateDiscount(array $data, int $id)
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.');
-        }
-
         return $this->discountRepositories->updateDiscount($data, $id);
     }
 
-    public function deleteDiscount(int $id, int $user_id)
+    public function deleteDiscount(int $id)
     {
         $this->discountRepositories->getDiscount($id);
-
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.');
-        }
-
         return $this->discountRepositories->deleteDiscount($id);
     }
 }

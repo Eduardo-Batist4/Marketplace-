@@ -13,14 +13,14 @@ class CouponController extends Controller
 
     public function index()
     {
-        return $this->couponService->getAllCoupon(Auth::id());
+        return $this->couponService->getAllCoupon();
     }
 
     public function store(StoreCouponRequest $request)
     {
         $validateDate = $request->validated();
 
-        $coupon = $this->couponService->createCoupon($validateDate, Auth::id());
+        $coupon = $this->couponService->createCoupon($validateDate);
 
         return response()->json([
             'message' => 'Successfully created!',
@@ -30,14 +30,14 @@ class CouponController extends Controller
 
     public function show(string $id)
     {
-        return $this->couponService->getCoupon($id, Auth::id());
+        return $this->couponService->getCoupon($id);
     }
 
     public function update(UpdateCouponRequest $request, string $id)
     {
         $validateDate = $request->validated();
 
-        $coupon = $this->couponService->updateCoupon($validateDate, $id, Auth::id());
+        $coupon = $this->couponService->updateCoupon($validateDate, $id);
 
         return response()->json([
             'message' => 'Successfully updated!',
@@ -47,7 +47,7 @@ class CouponController extends Controller
 
     public function destroy(string $id)
     {
-        $this->couponService->deleteCoupon($id, Auth::id());
+        $this->couponService->deleteCoupon($id);
 
         return response()->json([
             'message' => 'Successfully deleted!',

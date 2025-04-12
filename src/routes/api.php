@@ -36,7 +36,7 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
 
     // Switch role
-    Route::put('/users/{id}/role', [RoleController::class, 'update']);
+    Route::put('/users/{id}/role', [RoleController::class, 'update'])->middleware('is_admin');
 
     // Users
     Route::get('/users/{id}', [UserController::class, 'show']);
@@ -54,10 +54,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Category
     Route::get('/categories', [CategoryController::class, 'index']);
-    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::post('/categories', [CategoryController::class, 'store'])->middleware('is_admin');
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
-    Route::put('/categories/{id}', [CategoryController::class, 'update']);
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+    Route::put('/categories/{id}', [CategoryController::class, 'update'])->middleware('is_admin');
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->middleware('is_admin');
 
     // Product
     Route::post('/products', [ProductController::class, 'store']);
@@ -65,18 +65,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
     // Discount
-    Route::get('/discounts', [DiscountController::class, 'index']);
-    Route::post('/discounts', [DiscountController::class, 'store']);
-    Route::get('/discounts/{id}', [DiscountController::class, 'show']);
-    Route::put('/discounts/{id}', [DiscountController::class, 'update']);
-    Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
+    Route::get('/discounts', [DiscountController::class, 'index'])->middleware('is_admin');
+    Route::post('/discounts', [DiscountController::class, 'store'])->middleware('is_admin');
+    Route::get('/discounts/{id}', [DiscountController::class, 'show'])->middleware('is_admin');
+    Route::put('/discounts/{id}', [DiscountController::class, 'update'])->middleware('is_admin');
+    Route::delete('/discounts/{id}', [DiscountController::class, 'destroy'])->middleware('is_admin');
 
     // Coupon
-    Route::get('/coupons', [CouponController::class, 'index']);
-    Route::post('/coupons', [CouponController::class, 'store']);
-    Route::get('/coupons/{id}', [CouponController::class, 'show']);
-    Route::put('/coupons/{id}', [CouponController::class, 'update']);
-    Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
+    Route::get('/coupons', [CouponController::class, 'index'])->middleware('is_admin');
+    Route::post('/coupons', [CouponController::class, 'store'])->middleware('is_admin');
+    Route::get('/coupons/{id}', [CouponController::class, 'show'])->middleware('is_admin');
+    Route::put('/coupons/{id}', [CouponController::class, 'update'])->middleware('is_admin');
+    Route::delete('/coupons/{id}', [CouponController::class, 'destroy'])->middleware('is_admin');
 
     // Cart Items
     Route::get('/cart_items', [CartItemController::class, 'index']);

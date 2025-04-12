@@ -44,12 +44,8 @@ class UserService
         return $this->userRepositories->updateUser($data, $id);
     }
 
-    public function updateUserAdmin($data, $id, $user_id)
+    public function updateUserAdmin($data, $id)
     {
-        if (!$this->userRepositories->userIsAdmin($user_id)) {
-            throw new HttpException(403, 'Access denied.');
-        }
-
         return $this->userRepositories->updateUser($data, $id);
     }
 

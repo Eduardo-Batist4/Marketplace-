@@ -13,14 +13,14 @@ class DiscountController extends Controller
 
     public function index()
     {
-        return $this->discountService->getAllDiscounts(Auth::id());
+        return $this->discountService->getAllDiscounts();
     }
 
     public function store(StoreDiscountRequest $request)
     {
         $validateDate = $request->validated();
 
-        $discount = $this->discountService->createDiscount($validateDate, Auth::id());
+        $discount = $this->discountService->createDiscount($validateDate);
 
         return response()->json([
             'message' => 'Successfully created!',
@@ -30,14 +30,14 @@ class DiscountController extends Controller
 
     public function show(string $id)
     {
-        return $this->discountService->getDiscount($id, Auth::id());
+        return $this->discountService->getDiscount($id);
     }
 
     public function update(UpdateDiscountRequest $request, string $id)
     {
         $validateDate = $request->validated();
 
-        $discount = $this->discountService->updateDiscount($validateDate, $id, Auth::id());
+        $discount = $this->discountService->updateDiscount($validateDate, $id);
 
         return response()->json([
             'message' => 'Successfully updated!',
@@ -47,10 +47,10 @@ class DiscountController extends Controller
 
     public function destroy(string $id)
     {
-        $this->discountService->deleteDiscount($id, Auth::id());
+        $this->discountService->deleteDiscount($id);
 
         return response()->json([
             'message' => 'Successfully deleted!',
-        ], 204);   
+        ], 204);
     }
 }

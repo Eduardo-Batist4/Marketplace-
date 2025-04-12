@@ -14,14 +14,14 @@ class CategoryController extends Controller
 
     public function index()
     {
-        return $this->categoryService->getAllCategories(Auth::id());
+        return $this->categoryService->getAllCategories();
     }
 
     public function store(StoreCategoryRequest $request)
     {
         $validateDate = $request->validated();
 
-        $category = $this->categoryService->createCategory($validateDate, Auth::id());
+        $category = $this->categoryService->createCategory($validateDate);
 
         return response()->json([
             'message' => 'Successfully created!',
@@ -31,14 +31,14 @@ class CategoryController extends Controller
 
     public function show(string $id)
     {
-        return $this->categoryService->getCategory($id, Auth::id());
+        return $this->categoryService->getCategory($id);
     }
 
     public function update(UpdateCategoryRequest $request, string $id)
     {
         $validateDate = $request->validated();
 
-        $category = $this->categoryService->updateCategory($validateDate, $id, Auth::id());
+        $category = $this->categoryService->updateCategory($validateDate, $id);
 
         return response()->json([
             'message' => 'Successfully updated!',
@@ -48,7 +48,7 @@ class CategoryController extends Controller
 
     public function destroy(string $id)
     {
-        response($this->categoryService->deleteCategory($id, Auth::id()), 204);
+        response($this->categoryService->deleteCategory($id), 204);
         return response()->json([
             'message' => 'Successfully deleted!',
         ], 204);  

@@ -32,7 +32,7 @@ class CartItemService
         $cart = $this->cartRepositories->getCartWithUserID($id);
         $data['cart_id'] = $cart->id;
 
-        
+
         $productPrice = $this->productRepositories->getProduct($data['product_id']);
         $data['unit_price'] = $productPrice->price;
 
@@ -65,8 +65,7 @@ class CartItemService
 
     public function deleteCartItem(string $id)
     {
-        $cartItems = $this->cartItemRepositories->getCartItem($id);
-
+        $this->cartItemRepositories->getCartItem($id);
         return $this->cartItemRepositories->deleteCartItem($id);
     }
 }
