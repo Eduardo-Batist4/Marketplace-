@@ -12,14 +12,14 @@ class ProductService
 {
 
     public function __construct(
-        protected ProductRepositories $productRepositories, 
+        protected ProductRepositories $productRepositories,
         protected UserRepositories $userRepositories
     ) {}
 
     public function getAllProducts()
     {
         $product = $this->productRepositories->getAllProducts();
-        
+
         if (!$product) {
             return response()->json('No registered product!');
         }
@@ -27,12 +27,8 @@ class ProductService
         return $product;
     }
 
-    public function createProduct($request, $user_id)
+    public function createProduct($request)
     {
-        if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
-
         $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
 
         $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
@@ -49,23 +45,14 @@ class ProductService
         return $this->productRepositories->getProduct($id);
     }
 
-    public function updateProduct(array $data, string $id, int $user_id)
+    public function updateProduct(array $data, string $id)
     {
-        if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
-
         return $this->productRepositories->updateProduct($data, $id);
     }
 
-    public function deleteProduct(string $id, int $user_id)
+    public function deleteProduct(string $id)
     {
         $this->productRepositories->getProduct($id);
-
-        if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
-        }
-                
         return $this->productRepositories->deleteProduct($id);
     }
 }

@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+// Login and Register
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -60,9 +60,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->middleware('is_admin');
 
     // Product
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::put('/products/{id}', [ProductController::class, 'update']);
-    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+    Route::post('/products', [ProductController::class, 'store'])->middleware('is_not_client');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->middleware('is_not_client');
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->middleware('is_not_client');
 
     // Discount
     Route::get('/discounts', [DiscountController::class, 'index'])->middleware('is_admin');

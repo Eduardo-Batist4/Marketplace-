@@ -21,7 +21,7 @@ class ProductController extends Controller
     {
         $request->validated();
 
-        $product = $this->productService->createProduct($request, Auth::id());
+        $product = $this->productService->createProduct($request);
 
         return response()->json([
             'message' => 'Successfully created!',
@@ -34,11 +34,11 @@ class ProductController extends Controller
         return $this->productService->getProduct($id);
     }
 
-    public function update(UpdateProductRequest $request, string $id) 
+    public function update(UpdateProductRequest $request, string $id)
     {
         $validateData = $request->validated();
 
-        $product = $this->productService->updateProduct($validateData, $id, Auth::id());
+        $product = $this->productService->updateProduct($validateData, $id);
 
         return response()->json([
             'message' => 'Successfully updated!',
@@ -48,10 +48,10 @@ class ProductController extends Controller
 
     public function destroy(string $id)
     {
-        $this->productService->deleteProduct($id, Auth::id());
-        
+        $this->productService->deleteProduct($id);
+
         return response()->json([
             'message' => 'Successfully deleted!',
-        ], 204); 
+        ], 204);
     }
 }
