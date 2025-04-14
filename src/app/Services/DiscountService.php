@@ -16,46 +16,66 @@ class DiscountService
 
     public function getAllDiscounts()
     {
-        return $this->discountRepositories->getAllDiscounts();
+        try {
+            return $this->discountRepositories->getAllDiscounts();
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function createDiscount(array $data)
     {
-        /*
-            Return a list of all the discounts for a product
-        */
-        $allDiscountsForAProduct = $this->discountRepositories->getAllDiscountForProduct($data['product_id']);
-        
-        /*
-            I go through all the existing discounts and check if it will go over 60%
-        */
-        $DiscountLimit = 0;
-        
-        foreach ($allDiscountsForAProduct as $limit) {
-            $DiscountLimit += $limit->discount_percentage;
-        }
-        if (($DiscountLimit + $data['discount_percentage']) > 60) {
-            throw new HttpException(422, 'Discount cannot exceed 60%');
-        }
+        try {
+            /*
+                Return a list of all the discounts for a product
+            */
+            $allDiscountsForAProduct = $this->discountRepositories->getAllDiscountForProduct($data['product_id']);
 
-        $discount = $this->discountRepositories->createDiscount($data);
+            /*
+                I go through all the existing discounts and check if it will go over 60%
+            */
+            $DiscountLimit = 0;
 
-        return $discount;
+            foreach ($allDiscountsForAProduct as $limit) {
+                $DiscountLimit += $limit->discount_percentage;
+            }
+            if (($DiscountLimit + $data['discount_percentage']) > 60) {
+                throw new HttpException(422, 'Discount cannot exceed 60%');
+            }
+
+            $discount = $this->discountRepositories->createDiscount($data);
+
+            return $discount;
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function getDiscount(int $id)
     {
-        return $this->discountRepositories->getDiscount($id);
+        try {
+            return $this->discountRepositories->getDiscount($id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function updateDiscount(array $data, int $id)
     {
-        return $this->discountRepositories->updateDiscount($data, $id);
+        try {
+            return $this->discountRepositories->updateDiscount($data, $id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function deleteDiscount(int $id)
     {
-        $this->discountRepositories->getDiscount($id);
-        return $this->discountRepositories->deleteDiscount($id);
+        try {
+            $this->discountRepositories->getDiscount($id);
+            return $this->discountRepositories->deleteDiscount($id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 }

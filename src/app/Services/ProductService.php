@@ -18,41 +18,61 @@ class ProductService
 
     public function getAllProducts()
     {
-        $product = $this->productRepositories->getAllProducts();
+        try {
+            $product = $this->productRepositories->getAllProducts();
 
-        if (!$product) {
-            return response()->json('No registered product!');
+            if (!$product) {
+                return response()->json('No registered product!');
+            }
+
+            return $product;
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
         }
-
-        return $product;
     }
 
     public function createProduct($request)
     {
-        $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+        try {
+            $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
 
-        $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
+            $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
 
-        $data = $request->all();
+            $data = $request->all();
 
-        $data['image_path'] = $path;
+            $data['image_path'] = $path;
 
-        return $this->productRepositories->createProduct($data);
+            return $this->productRepositories->createProduct($data);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function getProduct(int $id)
     {
-        return $this->productRepositories->getProduct($id);
+        try {
+            return $this->productRepositories->getProduct($id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function updateProduct(array $data, string $id)
     {
-        return $this->productRepositories->updateProduct($data, $id);
+        try {
+            return $this->productRepositories->updateProduct($data, $id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function deleteProduct(string $id)
     {
-        $this->productRepositories->getProduct($id);
-        return $this->productRepositories->deleteProduct($id);
+        try {
+            $this->productRepositories->getProduct($id);
+            return $this->productRepositories->deleteProduct($id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 }

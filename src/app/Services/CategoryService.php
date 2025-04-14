@@ -13,29 +13,48 @@ class CategoryService
 
     public function getAllCategories()
     {
-        return $this->categoryRepositories->getAllCategory();
+        try {
+            return $this->categoryRepositories->getAllCategory();
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function createCategory(array $data)
     {
-        $category = $this->categoryRepositories->createCategory($data);
-        return $category;
+        try {
+            $category = $this->categoryRepositories->createCategory($data);
+            return $category;
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function getCategory(int $id)
     {
-        return $this->categoryRepositories->getCategory($id);
+        try {
+            return $this->categoryRepositories->getCategory($id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function updateCategory(array $data, int $id)
     {
-        return $this->categoryRepositories->updateCategory($data, $id);
+        try {
+            return $this->categoryRepositories->updateCategory($data, $id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function deleteCategory(int $id)
     {
-        $this->categoryRepositories->findCategory($id);
-
-        return $this->categoryRepositories->deleteCategory($id);
+        try {
+            $this->categoryRepositories->findCategory($id);
+            return $this->categoryRepositories->deleteCategory($id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 }

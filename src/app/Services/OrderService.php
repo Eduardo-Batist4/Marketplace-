@@ -26,7 +26,11 @@ class OrderService
 
     public function getAllOrder()
     {
-        return $this->ordersRepositories->getAllOrder();
+        try {
+            return $this->ordersRepositories->getAllOrder();
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 
     public function createOrder(array $data, int $user_id)
@@ -100,54 +104,69 @@ class OrderService
 
     public function productHasDiscount(int $id, int $unit_price)
     {
-        $product = $this->productService->getProduct($id);
-
-        if (!$product->discounts) {
-            return $product->unit_price;
+        try {
+            $product = $this->productService->getProduct($id);
+    
+            if (!$product->discounts) {
+                return $product->unit_price;
+            }
+    
+            $totalDiscount = 0;
+            foreach ($product->discounts as $discount) {
+                $totalDiscount += $discount->discount_percentage; 
+            }
+    
+            return  $unit_price - ($unit_price * ($totalDiscount / 100));
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
         }
-
-        $totalDiscount = 0;
-        foreach ($product->discounts as $discount) {
-            $totalDiscount += $discount->discount_percentage; 
-        }
-
-        return  $unit_price - ($unit_price * ($totalDiscount / 100));
     }
 
     public function applyCoupon(int $totalPrice, ?int $id) 
     {
-        if (!$id) {
-            return $totalPrice;
+        try {
+            if (!$id) {
+                return $totalPrice;
+            }
+    
+            $coupon = $this->couponRepositories->getCoupon($id);
+    
+            if (!$coupon) {
+                return $totalPrice;
+            }
+    
+            return $totalPrice - ($totalPrice * ($coupon->discount_percentage / 100));
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
         }
-
-        $coupon = $this->couponRepositories->getCoupon($id);
-
-        if (!$coupon) {
-            return $totalPrice;
-        }
-
-        return $totalPrice - ($totalPrice * ($coupon->discount_percentage / 100));
     }
 
     public function updateStatus(array $data, int $id, int $user_id)
     {
-        
-        if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(403, 'Access denied.'); 
+        try {
+            if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
+                throw new HttpException(403, 'Access denied.'); 
+            }
+            
+            $user = $this->userRepositories->getUser($user_id);
+            $order = $this->ordersRepositories->getOrder($id);
+    
+            SendOrderStatusEmail::dispatch($user->email, $order);
+    
+            return $this->ordersRepositories->updateOrder($data, $id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
         }
-        
-        $user = $this->userRepositories->getUser($user_id);
-        $order = $this->ordersRepositories->getOrder($id);
-
-        SendOrderStatusEmail::dispatch($user->email, $order);
-
-        return $this->ordersRepositories->updateOrder($data, $id);
     }
 
     public function deleteOrder(int $id)
     {
-        $this->ordersRepositories->getOrder($id);
-
-        return $this->ordersRepositories->deleteOrder($id);
+        try {
+            $this->ordersRepositories->getOrder($id);
+    
+            return $this->ordersRepositories->deleteOrder($id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
 }
