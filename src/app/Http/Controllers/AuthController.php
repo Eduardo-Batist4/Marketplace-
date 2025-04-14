@@ -9,6 +9,8 @@ use App\Services\UserService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -17,22 +19,25 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request) 
     {
-        $validateData = $request->validated();
-
-        $user = $this->userServices->findUserWithEmail($validateData['email']);
-
-        if(!$user || ! Hash::check($validateData['password'], $user->password)) {
+        try {
+            $validateData = $request->validated();
+    
+            if(!$token = JWTAuth::attempt($validateData)) {
+                return response()->json([
+                    'error' => 'Incorrect credentials!',
+                ], 400);
+            }
+    
             return response()->json([
-                'error' => 'Incorrect credentials!',
-            ], 400);
+                'message' => 'Successfully login',
+                'token' => $token
+            ], 200);
+        } catch (JWTException $error) {
+            return response()->json([
+                'error' => 'Could not create token',
+                $error
+            ], 500);
         }
-
-        $token = $user->createToken('token')->plainTextToken;
-        
-        return response()->json([
-            'message' => 'Successfully login',
-            'token' => $token
-        ], 200);
     }
 
     public function register(RegisterRequest $request) 

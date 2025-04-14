@@ -21,8 +21,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
-
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
 
     // Switch role
     Route::put('/users/{id}/role', [RoleController::class, 'update'])->middleware('is_admin');

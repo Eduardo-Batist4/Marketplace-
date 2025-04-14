@@ -4,9 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CheckUserIsAdminOrModerator
 {
@@ -17,7 +17,7 @@ class CheckUserIsAdminOrModerator
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role == 'client') {
+        if (JWTAuth::user()->role == 'client') {
             throw new HttpException(403, 'Access denied.'); 
         }
         return $next($request);
