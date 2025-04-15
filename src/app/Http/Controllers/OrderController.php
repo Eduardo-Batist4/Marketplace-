@@ -6,6 +6,7 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Services\OrderService;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class OrderController extends Controller
 {
@@ -14,7 +15,12 @@ class OrderController extends Controller
 
     public function index()
     {
-        return $this->orderService->getAllOrder();
+        return $this->orderService->getAllOrder(JWTAuth::user()->id);
+    }
+
+    public function getAllOrderEveryone()
+    {
+        return $this->orderService->getAllOrderEveryone();
     }
 
     public function store(StoreOrderRequest $request)

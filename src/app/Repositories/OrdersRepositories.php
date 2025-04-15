@@ -7,7 +7,12 @@ use App\Models\Order;
 class OrdersRepositories
 {
 
-    public function getAllOrder()
+    public function getAllOrder($id)
+    {
+        return Order::where('user_id', $id)->get();
+    }
+
+    public function getAllOrderEveryone()
     {
         return Order::all();
     }

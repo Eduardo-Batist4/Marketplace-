@@ -74,8 +74,9 @@ Route::middleware('auth:api')->group(function () {
 
     // Order
     Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/everyone', [OrderController::class, 'getAllOrderEveryone'])->middleware('is_admin');
     Route::post('/orders', [OrderController::class, 'store']);
-    Route::put('/orders/{id}', [OrderController::class, 'update'])->middleware('is_admin');;
+    Route::put('/orders/{id}', [OrderController::class, 'update'])->middleware('is_admin');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 
 });

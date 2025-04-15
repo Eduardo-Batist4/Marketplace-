@@ -11,6 +11,7 @@ use App\Repositories\OrdersRepositories;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class OrderService
 {
@@ -25,10 +26,19 @@ class OrderService
         protected CartItemRepositories $cartItemRepositories
     ) {}
 
-    public function getAllOrder()
+    public function getAllOrder($user_id)
     {
         try {
-            return $this->ordersRepositories->getAllOrder();
+            return $this->ordersRepositories->getAllOrder($user_id);
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
+    }
+
+    public function getAllOrderEveryone()
+    {
+        try {
+            return $this->ordersRepositories->getAllOrderEveryone();
         } catch (\Exception $error) {
             return response()->json(['error' => $error->getMessage()], 500);
         }
