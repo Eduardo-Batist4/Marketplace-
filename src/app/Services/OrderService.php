@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendOrderCreateEMail;
 use App\Jobs\SendOrderStatusEmail;
 use App\Repositories\AddressRepositories;
 use App\Repositories\CartItemRepositories;
@@ -93,6 +94,8 @@ class OrderService
 
             DB::commit();
             
+            SendOrderCreateEMail::dispatch($user, $order);
+
             $this->cartItemRepositories->deleteAllItems();
             return $order;
         } catch (\Exception $error) {
