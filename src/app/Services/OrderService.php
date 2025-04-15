@@ -151,9 +151,10 @@ class OrderService
             $user = $this->userRepositories->getUser($user_id);
             $order = $this->ordersRepositories->getOrder($id);
     
+            $order = $this->ordersRepositories->updateOrder($data, $id);
+            
             SendOrderStatusEmail::dispatch($user->email, $order);
-    
-            return $this->ordersRepositories->updateOrder($data, $id);
+            return $order;
         } catch (\Exception $error) {
             return response()->json(['error' => $error->getMessage()], 500);
         }
