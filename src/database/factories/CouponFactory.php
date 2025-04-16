@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use Doctrine\Inflector\Rules\Word;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

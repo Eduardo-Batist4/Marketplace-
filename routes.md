@@ -252,6 +252,11 @@
 
 **GET:** /orders 
 ```bash
+// Retorna todos os pedidos do usuário.
+```
+**GET:** /orders/everyone
+```bash
+// Somente admin.
 // Retorna todos os pedidos.
 ```
 **POST:** /orders 
