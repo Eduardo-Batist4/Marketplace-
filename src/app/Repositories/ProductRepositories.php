@@ -6,9 +6,27 @@ use App\Models\Product;
 
 class ProductRepositories
 {
-    public function getAllProducts()
+    public function getAllProducts(array $filter)
     {
-        return Product::all()->load('discounts');
+        $query = Product::query();
+
+        if (!empty($filter['name'])) {
+            $query->where('name', 'like', '%' . $filter['name'] . '%');
+        }
+
+        if (!empty($filter['category_id'])) {
+            $query->where('category_id', 'like', '%' . $filter['category_id'] . '%');
+        }
+
+        if (!empty($filter['min_price'])) {
+            $query->where('price' , '>=', $filter['min_price']);
+        }
+
+        if (!empty($filter['max_price'])) {
+            $query->where('price' , '<=', $filter['max_price']);
+        }
+
+        return $query->with('discounts')->get();
     }
 
     public function createProduct($data)

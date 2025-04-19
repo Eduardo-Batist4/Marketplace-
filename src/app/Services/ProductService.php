@@ -16,10 +16,10 @@ class ProductService
         protected UserRepositories $userRepositories
     ) {}
 
-    public function getAllProducts()
+    public function getAllProducts(array $filter)
     {
         try {
-            $product = $this->productRepositories->getAllProducts();
+            $product = $this->productRepositories->getAllProducts($filter);
 
             if (!$product) {
                 return response()->json('No registered product!');

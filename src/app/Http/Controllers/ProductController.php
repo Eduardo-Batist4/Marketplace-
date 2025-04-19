@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Services\ProductService;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
 
     public function __construct(protected ProductService $productService) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        return $this->productService->getAllProducts();
+        return $this->productService->getAllProducts($request->all());
     }
 
     public function store(StoreProductRequest $request)
