@@ -6,6 +6,7 @@ use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
@@ -20,6 +21,9 @@ Route::post('/register', [AuthController::class, 'register']);
 // Product
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+
+// Feedback
+Route::get('/feedbacks', [FeedbackController::class, 'index']);
 
 Route::middleware('auth:api')->group(function () {
 
