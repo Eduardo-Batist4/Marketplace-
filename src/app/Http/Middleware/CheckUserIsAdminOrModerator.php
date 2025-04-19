@@ -17,7 +17,9 @@ class CheckUserIsAdminOrModerator
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (JWTAuth::user()->role == 'client') {
+        $user = JWTAuth::user();
+
+        if (!$user || $user->role == 'client') {
             throw new HttpException(403, 'Access denied.'); 
         }
         return $next($request);
