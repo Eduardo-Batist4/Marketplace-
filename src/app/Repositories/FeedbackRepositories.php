@@ -7,9 +7,9 @@ use App\Models\Order;
 
 class FeedbackRepositories
 {
-    public function getAllFeedbacks()
+    public function getAllFeedbacks(int $product_id)
     {
-        return Feedback::all();
+        return Feedback::where('product_id', $product_id)->get();
     }
 
     public function userHasOrder(array $data)
@@ -23,9 +23,9 @@ class FeedbackRepositories
         return $order;
     }
 
-    public function userHasAlreadyGivenFeedback(int $product_id)
+    public function userHasAlreadyGivenFeedback(int $user_id, int $product_id)
     {
-        return Feedback::where('product_id', $product_id)->first();
+        return Feedback::where('user_id', $user_id)->where('product_id', $product_id)->first();
     }
 
     public function createFeedback(array $data)

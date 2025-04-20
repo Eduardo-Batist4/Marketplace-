@@ -17,10 +17,10 @@ class FeedbackService
         protected OrdersRepositories $ordersRepositories
     ) {}
 
-    public function getAllFeedbacks()
+    public function getAllFeedbacks(int $product_id)
     {
         try {
-            return $this->feedbackRepositories->getAllFeedbacks();
+            return $this->feedbackRepositories->getAllFeedbacks($product_id);
         } catch (\Exception $error) {
             return response()->json(['error' => $error->getMessage()], 500);
         }
@@ -34,7 +34,7 @@ class FeedbackService
                 return throw new HttpException(403, 'Not permission.');
             }
 
-            $userHasAlreadyGivenFeedback = $this->feedbackRepositories->userHasAlreadyGivenFeedback($data['product_id']);
+            $userHasAlreadyGivenFeedback = $this->feedbackRepositories->userHasAlreadyGivenFeedback($data['user_id'], $data['product_id']);
             if ($userHasAlreadyGivenFeedback) {
                 return throw new HttpException(403, 'You have already given feedback.');
             }

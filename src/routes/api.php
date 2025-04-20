@@ -23,7 +23,7 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
 // Feedback
-Route::get('/feedbacks', [FeedbackController::class, 'index']);
+Route::get('/feedbacks/{id}', [FeedbackController::class, 'index']);
 Route::post('/feedbacks', [FeedbackController::class, 'store']);
 
 Route::middleware('auth:api')->group(function () {

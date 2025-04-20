@@ -11,9 +11,9 @@ class FeedbackController extends Controller
 
     public function __construct(protected FeedbackService $feedbackService) {}
 
-    public function index()
+    public function index(int $product_id)
     {
-        return $this->feedbackService->getAllFeedbacks();
+        return $this->feedbackService->getAllFeedbacks($product_id);
     }
 
     public function store(StoreFeedbackRequest $request)
@@ -26,4 +26,5 @@ class FeedbackController extends Controller
 
         return response()->json($feedback, 201);
     }
+
 }
