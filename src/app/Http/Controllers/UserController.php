@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
-use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -14,7 +14,7 @@ class UserController extends Controller
 
     public function show(int $id)
     {
-        $user = $this->userService->getUser($id, Auth::id());
+        $user = $this->userService->getUser($id, JWTAuth::user()->id);
 
         return response()->json($user, 200);
     }
@@ -23,7 +23,7 @@ class UserController extends Controller
     {
         $validateData = $request->validated();
         
-        $user = $this->userService->updateUser($validateData, $id, Auth::id());
+        $user = $this->userService->updateUser($validateData, $id, JWTAuth::user()->id);
         
         return response()->json([
             'message' => 'Successfully updated!',
@@ -35,7 +35,7 @@ class UserController extends Controller
     {
         $request->validated();
 
-        $this->userService->updateUserImage($request, $id, Auth::id());
+        $this->userService->updateUserImage($request, $id, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully updated!',
@@ -44,7 +44,7 @@ class UserController extends Controller
 
     public function destroy(int $id)
     {
-        $this->userService->deleteUser($id, Auth::id());
+        $this->userService->deleteUser($id, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully deleted!',
