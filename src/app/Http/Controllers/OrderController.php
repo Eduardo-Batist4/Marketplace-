@@ -27,7 +27,7 @@ class OrderController extends Controller
     {
         $validateData = $request->validated();
 
-        $order = $this->orderService->createOrder($validateData, Auth::id());
+        $order = $this->orderService->createOrder($validateData, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully placed!',
@@ -39,7 +39,7 @@ class OrderController extends Controller
     {
         $validateData = $request->validated();
 
-        $order = $this->orderService->updateStatus($validateData, $id, Auth::id());
+        $order = $this->orderService->updateStatus($validateData, $id, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully updated!',

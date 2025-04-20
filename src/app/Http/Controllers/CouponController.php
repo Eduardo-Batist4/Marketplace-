@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCouponRequest;
 use App\Http\Requests\UpdateCouponRequest;
 use App\Services\CouponService;
-use Illuminate\Support\Facades\Auth;
+
 
 class CouponController extends Controller
 {
