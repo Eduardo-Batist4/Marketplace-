@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFeedbackRequest;
 use App\Services\FeedbackService;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class FeedbackController extends Controller
 {
@@ -19,11 +20,10 @@ class FeedbackController extends Controller
     {
         $validateData = $request->validated();
 
+        $validateData['user_id'] = JWTAuth::user()->id;
+
         $feedback = $this->feedbackService->createFeedback($validateData);
 
-        return response()->json([
-            'message' => 'Successfully created!',
-            'feedback' => $feedback
-        ], 201);
+        return response()->json($feedback, 201);
     }
 }

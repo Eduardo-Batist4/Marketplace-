@@ -3,12 +3,29 @@
 namespace App\Repositories;
 
 use App\Models\Feedback;
+use App\Models\Order;
 
 class FeedbackRepositories
 {
     public function getAllFeedbacks()
     {
         return Feedback::all();
+    }
+
+    public function userHasOrder(array $data)
+    {
+        $product_id = $data['product_id'];
+
+        $order = Order::where('user_id', $data['user_id'])->whereHas('orderItems', function ($query) use ($product_id) {
+            $query->where('product_id', $product_id);
+        })->with('orderItems')->exists();
+
+        return $order;
+    }
+
+    public function userHasAlreadyGivenFeedback(int $product_id)
+    {
+        return Feedback::where('product_id', $product_id)->first();
     }
 
     public function createFeedback(array $data)
