@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Requests\UpdateCartItemRequest;
 use App\Services\CartItemService;
-use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CartItemController extends Controller
 {
@@ -13,14 +13,14 @@ class CartItemController extends Controller
 
     public function index()
     {
-        return $this->cartItemService->getAllCartItems(Auth::id());
+        return $this->cartItemService->getAllCartItems(JWTAuth::user()->id);
     }
 
     public function store(StoreCartItemRequest $request)
     {
         $validateDate = $request->validated();
 
-        $cartItem = $this->cartItemService->createCartItem($validateDate, Auth::id());
+        $cartItem = $this->cartItemService->createCartItem($validateDate, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully added to cart!',
