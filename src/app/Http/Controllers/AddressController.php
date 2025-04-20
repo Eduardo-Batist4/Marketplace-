@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\UpdateAddressRequest;
 use App\Services\AddressService;
-use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AddressController extends Controller
 {
@@ -14,7 +14,7 @@ class AddressController extends Controller
 
     public function index()
     {
-        $addresses = $this->addressService->getAllAddress(Auth::id());
+        $addresses = $this->addressService->getAllAddress(JWTAuth::user()->id);
 
         return response()->json($addresses, 200);
     }
@@ -23,7 +23,7 @@ class AddressController extends Controller
     {
         $validateData = $request->validated();
 
-        $validateData['user_id'] = Auth::id();
+        $validateData['user_id'] = JWTAuth::user()->id;
 
         $address = $this->addressService->createAddress($validateData);
 
@@ -37,9 +37,9 @@ class AddressController extends Controller
     {
         $validateData = $request->validated();
 
-        $validateData['user_id'] = Auth::id();
+        $validateData['user_id'] = JWTAuth::user()->id;
 
-        $address = $this->addressService->updateAddress($validateData, $id, Auth::id());
+        $address = $this->addressService->updateAddress($validateData, $id, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully updated!',
@@ -49,7 +49,7 @@ class AddressController extends Controller
 
     public function destroy(string $id)
     {
-        $this->addressService->deleteAddress($id, Auth::id());
+        $this->addressService->deleteAddress($id, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully deleted!',
