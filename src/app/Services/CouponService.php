@@ -3,16 +3,11 @@
 namespace App\Services;
 
 use App\Repositories\CouponRepositories;
-use App\Repositories\UserRepositories;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CouponService
 {
 
-    public function __construct(
-        protected CouponRepositories $couponRepositories,
-        protected UserRepositories $userRepositories
-    ) {}
+    public function __construct(protected CouponRepositories $couponRepositories) {}
 
     public function getAllCoupon()
     {
