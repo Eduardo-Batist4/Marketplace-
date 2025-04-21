@@ -17,7 +17,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         
-        static $counter = 1;
+        static $counter = 2;
 
         return [
             'name' => fake()->name(),

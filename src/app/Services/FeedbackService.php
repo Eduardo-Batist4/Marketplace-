@@ -5,8 +5,9 @@ namespace App\Services;
 use App\Repositories\FeedbackRepositories;
 use App\Repositories\OrdersRepositories;
 use App\Repositories\UserRepositories;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Str;
 
 class FeedbackService
 {
@@ -37,6 +38,16 @@ class FeedbackService
             $userHasAlreadyGivenFeedback = $this->feedbackRepositories->userHasAlreadyGivenFeedback($data['user_id'], $data['product_id']);
             if ($userHasAlreadyGivenFeedback) {
                 throw new HttpException(403, 'You have already given feedback.');
+            }
+
+            // Verify if image is null
+            if (!empty($data['image_path'])) {
+                $image = $data['image_path'];
+                $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                $path = Storage::putFileAs('public/feedback', $image, $imageName);
+                $data['image_path'] = $path;
+            } else {
+                unset($data['image_path']);
             }
 
             $feedback = $this->feedbackRepositories->createFeedback($data);

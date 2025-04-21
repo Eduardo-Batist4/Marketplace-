@@ -22,6 +22,7 @@ class FeedbackController extends Controller
         $validateData = $request->validated();
 
         $validateData['user_id'] = JWTAuth::user()->id;
+        $validatedData['image_path'] = $request->file('image_path');
 
         $feedback = $this->feedbackService->createFeedback($validateData);
 

@@ -36,7 +36,7 @@ class ProductService
         try {
             $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
 
-            $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
+            $path = Storage::putFileAs('public/products', $request->file('image_path'), $imageName);
 
             $data = $request->all();
 
