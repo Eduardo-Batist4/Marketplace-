@@ -21,7 +21,7 @@ class UserFactory extends Factory
 
         return [
             'name' => fake()->name(),
-            'email' => 'usuario' . $counter++ . '@example.com',
+            'email' => 'usuario' . $counter++ . '@teste.com',
             'email_verified_at' => now(),
             'password' => bcrypt('Senha123'),
             'remember_token' => null
