@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFeedbackRequest;
+use App\Http\Requests\UpdateFeedbackRequest;
 use App\Services\FeedbackService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -24,7 +25,34 @@ class FeedbackController extends Controller
 
         $feedback = $this->feedbackService->createFeedback($validateData);
 
-        return response()->json($feedback, 201);
+        if ($feedback instanceof \Illuminate\Http\JsonResponse) {
+            return $feedback;
+        }
+
+        return response()->json([
+            'message' => 'Successfully created!',
+            'feedback' => $feedback
+        ], 201);
     }
 
+    public function show(int $id)
+    {
+        return response()->json($this->feedbackService->getFeedback($id), 200);
+    }
+
+    public function update(UpdateFeedbackRequest $request, int $id)
+    {
+        $validateData = $request->validated();
+
+        $feedback = $this->feedbackService->updateFeedback($validateData, $id, JWTAuth::user()->id);
+
+        if ($feedback instanceof \Illuminate\Http\JsonResponse) {
+            return $feedback;
+        }
+
+        return response()->json([
+            'message' => 'Successfully updated!',
+            'feedback' => $feedback
+        ], 200);
+    }
 }

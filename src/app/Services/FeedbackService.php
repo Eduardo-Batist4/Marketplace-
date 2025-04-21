@@ -31,12 +31,12 @@ class FeedbackService
         try {
             $userPurchasedTheProduct = $this->feedbackRepositories->userHasOrder($data);
             if (!$userPurchasedTheProduct) {
-                return throw new HttpException(403, 'Not permission.');
+                throw new HttpException(403, 'Not permission.');
             }
 
             $userHasAlreadyGivenFeedback = $this->feedbackRepositories->userHasAlreadyGivenFeedback($data['user_id'], $data['product_id']);
             if ($userHasAlreadyGivenFeedback) {
-                return throw new HttpException(403, 'You have already given feedback.');
+                throw new HttpException(403, 'You have already given feedback.');
             }
 
             $feedback = $this->feedbackRepositories->createFeedback($data);
@@ -56,9 +56,14 @@ class FeedbackService
         }
     }
 
-    public function updateFeedback(array $data, int $id)
+    public function updateFeedback(array $data, int $id, int $user_id)
     {
         try {
+            $feedbackUser = $this->feedbackRepositories->getFeedback($id);
+            if ($user_id != $feedbackUser->user_id) {
+                throw new HttpException(403, 'Not permission.');
+            }
+
             return $this->feedbackRepositories->updateFeedback($data, $id);
         } catch (\Exception $error) {
             return response()->json(['error' => $error->getMessage()], 500);

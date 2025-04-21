@@ -23,8 +23,8 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
 // Feedback
-Route::get('/feedbacks/{id}', [FeedbackController::class, 'index']);
-Route::post('/feedbacks', [FeedbackController::class, 'store']);
+Route::get('/feedbacks/{id}/all', [FeedbackController::class, 'index']);
+Route::get('/feedbacks/{id}', [FeedbackController::class, 'show']);
 
 Route::middleware('auth:api')->group(function () {
 
@@ -83,6 +83,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::put('/orders/{id}', [OrderController::class, 'update'])->middleware('is_admin');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+
+    // Feedback
+    Route::post('/feedbacks', [FeedbackController::class, 'store']);
+    Route::put('/feedbacks/{id}', [FeedbackController::class, 'update']);
 
 });
 
