@@ -55,4 +55,13 @@ class FeedbackController extends Controller
             'feedback' => $feedback
         ], 200);
     }
+
+    public function destroy(int $id)
+    {
+        $this->feedbackService->deleteFeedback($id);
+
+        return response()->json([
+            'message' => 'Successfully deleted!',
+        ], 204);     
+    }
 }

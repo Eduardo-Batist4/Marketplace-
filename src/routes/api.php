@@ -87,6 +87,7 @@ Route::middleware('auth:api')->group(function () {
     // Feedback
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
     Route::put('/feedbacks/{id}', [FeedbackController::class, 'update']);
+    Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])->middleware('is_not_client');
 
 });
 
