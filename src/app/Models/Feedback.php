@@ -13,6 +13,7 @@ class Feedback extends Model
         'product_id',
         'user_id',
         'stars',
+        'image_path',
         'description'
     ];
 
