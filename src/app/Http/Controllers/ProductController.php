@@ -19,9 +19,10 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $request->validated();
+        $validateData = $request->validated();
+        $validateData['image_path'] = $request->file('image_path');
 
-        $product = $this->productService->createProduct($request);
+        $product = $this->productService->createProduct($validateData);
 
         return response()->json([
             'message' => 'Successfully created!',

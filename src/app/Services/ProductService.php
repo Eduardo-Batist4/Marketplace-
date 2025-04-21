@@ -31,15 +31,14 @@ class ProductService
         }
     }
 
-    public function createProduct($request)
+    public function createProduct(array $data)
     {
         try {
-            $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+            $image = $data['image_path'];
+            $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
 
-            $path = Storage::putFileAs('public/products', $request->file('image_path'), $imageName);
-
-            $data = $request->all();
-
+            $path = Storage::putFileAs('public/products', $image, $imageName);
+            
             $data['image_path'] = $path;
 
             return $this->productRepositories->createProduct($data);
