@@ -24,7 +24,7 @@ class CategoryRepositories
 
     public function getCategory(int $id)
     {
-        $category = $this->findCategory($id);
+        $category = $this->findCategory($id)->load('products');
 
         return $category;
     }
