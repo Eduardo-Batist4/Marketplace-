@@ -16,7 +16,16 @@
     {
         "name": "Jhon Doe",
         "email": "email@teste.com",
-        "password": "senha123"
+        "password": "senha123",
+    }
+
+// Com imagem, o formato será Form Data (Multipart).
+
+    {
+        name                Jhon Doe
+        email               email@teste.com
+        password            senha123
+        image_path          file
     }
 ```
 
@@ -119,7 +128,7 @@
 ```
 **POST:** /products 
 ```bash
-// Como usamos imagem, o formato será Multipart, e não JSON.
+// Como usamos imagem, o formato será Form Data (Multipart).
 
     {
         name                Tv Samsung
@@ -275,5 +284,38 @@
 ```bash
 // Apaga um pedido.
 ```
+## Feedback
 
+**GET:** /feedbacks/{id}/all
+```bash
+// Retorna todos os feedbacks do produto.
+```
+**GET:** /feedbacks/{id}
+```bash
+// Retorna um único feedback do produto.
+``` 
+**POST:** /feedbacks
+```bash
+// Usando imagem, o formato será Form Data (Multipart).
+
+    {
+        product_id          2
+        stars               5
+        image_path          file
+        description         descrição....
+    }
+```
+**PUT:** /feedbacks/{id}
+```bash
+// Permitido somente a descrição.
+
+    {
+        "description": "descrição...."
+    }
+```
+**DELETE:** /feedbacks/{id}
+```bash
+// Somente Moderador e Admin
+// Apaga um endereço.
+```
 
