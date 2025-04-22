@@ -125,6 +125,11 @@
 **GET:** /products 
 ```bash
 // Retorna todos os produtos.
+// Com Filtros:
+    /products?name=nome 
+    /products?category=category_id 
+    /products?min_price=500 
+    /products?max_price=1000 
 ```
 **POST:** /products 
 ```bash
