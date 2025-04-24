@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDiscountRequest;
 use App\Http\Requests\UpdateDiscountRequest;
 use App\Services\DiscountService;
-use Illuminate\Support\Facades\Auth;
 
 class DiscountController extends Controller
 {

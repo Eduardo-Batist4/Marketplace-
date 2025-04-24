@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\CategoryRepositories;
 use App\Repositories\UserRepositories;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CategoryService
 {

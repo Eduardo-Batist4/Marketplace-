@@ -40,7 +40,6 @@ class FeedbackService
                 throw new HttpException(403, 'You have already given feedback.');
             }
 
-            // Verify if image is null
             if (!empty($data['image_path'])) {
                 $image = $data['image_path'];
                 $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();

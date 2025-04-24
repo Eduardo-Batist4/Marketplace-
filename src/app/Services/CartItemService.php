@@ -29,19 +29,12 @@ class CartItemService
     public function createCartItem(array $data, int $id)
     {
         try {
-            /*
-                takes the cart of the logged-in user.
-                There's no way the user doesn't have a cart!
-            */
             $cart = $this->cartRepositories->getCartWithUserID($id);
             $data['cart_id'] = $cart->id;
 
             $productPrice = $this->productRepositories->getProduct($data['product_id']);
             $data['unit_price'] = $productPrice->price;
 
-            /*
-               Checking stock
-            */
             if ($data['quantity'] > $productPrice->stock) {
                 throw new HttpException(422, 'Quantity exceeds available stock.');
             }
@@ -59,9 +52,6 @@ class CartItemService
 
             $product = $this->productRepositories->getProduct($cartItems->product_id);
 
-            /*
-               Checking stock
-            */
             if ($data['quantity'] > $product->stock) {
                 throw new HttpException(422, 'Quantity exceeds available stock.');
             }

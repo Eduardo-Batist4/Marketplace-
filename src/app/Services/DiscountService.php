@@ -26,14 +26,8 @@ class DiscountService
     public function createDiscount(array $data)
     {
         try {
-            /*
-                Return a list of all the discounts for a product
-            */
             $allDiscountsForAProduct = $this->discountRepositories->getAllDiscountForProduct($data['product_id']);
 
-            /*
-                I go through all the existing discounts and check if it will go over 60%
-            */
             $DiscountLimit = 0;
 
             foreach ($allDiscountsForAProduct as $limit) {

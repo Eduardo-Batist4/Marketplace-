@@ -11,7 +11,6 @@ use App\Repositories\OrdersRepositories;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class OrderService
 {
@@ -46,42 +45,27 @@ class OrderService
 
     public function createOrder(array $data, int $user_id)
     {
-        /* 
-            Get the user by token
-        */
         $user = $this->userRepositories->getUser($user_id)->load('address');
         $data['user_id'] = $user->id;
         
-        /* 
-            Checks if the address belongs to the logged-in user
-        */
         $address = $this->addressRepositories->getAddressWithUser($user->id, $data['address_id']);
         if (!$address) {
             throw new HttpException(404, 'Address not found!');
         }
         
-        $cartItems = $user->cart->cartItems; // Get all items of the cart 
+        $cartItems = $user->cart->cartItems; 
         if($cartItems->isEmpty()) {
             throw new HttpException(404, 'No items in the cart');
         }
 
         DB::beginTransaction();
         try {
-            /*
-                Create Order
-            */
             $order = $this->ordersRepositories->createOrder($data);
 
-            $totalCart = 0; // Total cart price
+            $totalCart = 0; 
 
-            /*
-                Scroll through all the items in the cart
-            */
             foreach ($cartItems as $item) {
 
-                /*
-                    Check if the products are discounted
-                */
                 $productPrice = $this->productHasDiscount($item->product_id, $item->unit_price);
 
                 $totalCart += $productPrice * $item->quantity;
@@ -95,9 +79,6 @@ class OrderService
 
             }
 
-            /*
-                Updated total_amount from order table
-            */
             $total_amount = $this->applyCoupon($totalCart, $data['coupon_id'] ?? null);
 
             $order->update(['total_amount' => $total_amount]);

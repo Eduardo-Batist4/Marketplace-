@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Repositories\ProductRepositories;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Str;
 
 class ProductService
