@@ -26,6 +26,10 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/feedbacks/{id}/all', [FeedbackController::class, 'index']);
 Route::get('/feedbacks/{id}', [FeedbackController::class, 'show']);
 
+// Reset Password
+Route::post('/forgot-password', [UserController::class, 'forgotPassword']);
+Route::post('/reset-password', [UserController::class, 'resetPassword']);
+
 Route::middleware('auth:api')->group(function () {
 
     // Switch role
@@ -35,7 +39,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
-
     // Update User Image
     Route::put('/users/{id}/update-image', [UserController::class, 'updateImage']);
 
