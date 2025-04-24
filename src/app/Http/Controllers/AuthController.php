@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\CartService;
 use App\Services\UserService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -41,21 +42,30 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request) 
     {
-        $validateData = $request->validated();
+        DB::beginTransaction();
+        try {
+            $validateData = $request->validated();
+    
+            $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+    
+            $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
+    
+            $validateData['image_path'] = $path;
 
-        $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
-
-        $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
-
-        $validateData['image_path'] = $path;
-
-        $user = $this->userServices->createUser($validateData);
-
-        $this->cartService->createCart([ 'user_id' => $user->id ]);
-        
-        return response()->json([
-            'message' => 'User successfully registered!',
-            'user' => $user
-        ], 201);
+            $user = $this->userServices->createUser($validateData);
+    
+            $this->cartService->createCart([ 'user_id' => $user->id ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'User successfully registered!',
+                'user' => $user
+            ], 201);
+        } catch (JWTException $error) {
+            DB::rollback();
+            return response()->json([
+                'error' => 'Could not create token',
+                $error
+            ], 500);
+        }
     }
 }
