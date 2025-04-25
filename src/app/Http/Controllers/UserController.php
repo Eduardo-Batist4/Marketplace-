@@ -6,11 +6,10 @@ use App\Http\Requests\ForgotPassword;
 use App\Http\Requests\ResetPassword;
 use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Jobs\SendPasswordResetEmail;
 use App\Models\User;
+use App\Services\PasswordService;
 use App\Services\UserService;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -18,7 +17,10 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class UserController extends Controller
 {
 
-    public function __construct(protected UserService $userService) {}
+    public function __construct(
+        protected UserService $userService,
+        protected PasswordService $passwordService
+    ) {}
 
     public function show(int $id)
     {
@@ -61,39 +63,21 @@ class UserController extends Controller
 
     public function forgotPassword(ForgotPassword $request)
     {
-        $request->validated();
+        $validateData = $request->validated();
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        if($status !== Password::RESET_LINK_SENT) {
-            return response()->json([
-                'message' => 'Email not sent'
-            ], 400);
-        }
+        $status = $this->passwordService->forgotPassword($validateData);
 
         return response()->json([
-            'message' => 'Successfully send email!'
+            'message' => 'Successfully send email!',
+            'status' => $status
         ], 200);
     }
 
     public function resetPassword(ResetPassword $request)
     {
-        $request->validated();
+        $validateData = $request->validated();
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ]);
-     
-                $user->save();
-     
-                event(new PasswordReset($user));
-            }
-        );
+        $status = $this->passwordService->resetPassword($validateData);
 
         return response()->json([
             'message' => 'Successfully password changed',
