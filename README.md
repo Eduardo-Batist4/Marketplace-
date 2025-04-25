@@ -62,7 +62,11 @@ Para rodar esse projeto, você tem que configurar suas variaveis de ambiente no 
 ```bash
     php artisan migrate
 ```
-9. Rodar os seeders e factories:
+9. Gerar o JWT_SECRET:
+```bash
+    php artisan jwt:secret
+```
+10. Rodar os seeders e factories:
 Vai gerar dados para:
 - Usuarios
 - Endereços
@@ -74,6 +78,13 @@ Vai gerar dados para:
 ```bash
     php artisan db:seed
 ```
+
+## Testar Email com MailHog
+
+Email para pedido e atualização de pedido!
+
+http://localhost:8025/
+
 ## Acessar o phpMyAdmin
 
 Com o Docker rodando, é possível acessar o phpMyAdmin pelo link:

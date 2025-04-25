@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
+// Category
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/{id}', [CategoryController::class, 'show']);
+
 // Product
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
@@ -49,9 +53,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy']);
 
     // Category
-    Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store'])->middleware('is_admin');
-    Route::get('/categories/{id}', [CategoryController::class, 'show']);
     Route::put('/categories/{id}', [CategoryController::class, 'update'])->middleware('is_admin');
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->middleware('is_admin');
 

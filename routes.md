@@ -4,6 +4,8 @@
 
 ### **Login e Registro**
 
+// Não é necessário autenticação.
+
 **Post:** /login
 ```bash
     {
@@ -93,6 +95,7 @@
 
 **GET:** /categories 
 ```bash
+// Não é necessário autenticação.
 // Retorna todos as categorias.
 ```
 **POST:** /categories 
@@ -104,6 +107,7 @@
 ```
 **GET:** /categories/{id}
 ```bash
+// Não é necessário autenticação.
 // Retorna uma categoria.
 ```
 **PUT:** /categories/{id}
@@ -124,6 +128,7 @@
 
 **GET:** /products 
 ```bash
+// Não é necessário autenticação.
 // Retorna todos os produtos.
 // Com Filtros:
     /products?name=nome 
@@ -146,6 +151,7 @@
 ```
 **GET:** /products/{id}
 ```bash
+// Não é necessário autenticação.
 // Retorna um produto.
 ```
 **PUT:** /products/{id}
@@ -293,10 +299,12 @@
 
 **GET:** /feedbacks/{id}/all
 ```bash
+// Não é necessário autenticação.
 // Retorna todos os feedbacks do produto.
 ```
 **GET:** /feedbacks/{id}
 ```bash
+// Não é necessário autenticação.
 // Retorna um único feedback do produto.
 ``` 
 **POST:** /feedbacks
@@ -323,4 +331,28 @@
 // Somente Moderador e Admin
 // Apaga um endereço.
 ```
+## Forgot and Reset Password
 
+// Não é necessário autenticação.
+
+1. Acessar a rota /forgot-password:
+```bash
+    {
+        "email": "email@teste.com"
+    }
+```
+2. Ir para o MailHog:
+```bash
+    // Extrair o token do link recebido.
+    // Exemplo:
+    // reset_password/**token00203002302032**
+```
+3. Acessar a rota /reset-password:
+```bash
+    {
+        "email": "email@teste.com",
+        "password": "senha",
+        "password_confirmation": "senha",
+        "token": "token00203002302032"
+    }
+```
