@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ForgotPassword;
+use App\Http\Requests\ResetPassword;
 use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Jobs\SendPasswordResetEmail;
@@ -57,11 +59,9 @@ class UserController extends Controller
         ], 204);
     }
 
-    public function forgotPassword(Request $request)
+    public function forgotPassword(ForgotPassword $request)
     {
-        $request->validate([
-            'email' => 'required|string|email|max:255'
-        ]);
+        $request->validated();
 
         $status = Password::sendResetLink(
             $request->only('email')
@@ -78,13 +78,9 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPassword $request)
     {
-        $request->validate([
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|confirmed|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/',
-            'token' => 'required|string'
-        ]);
+        $request->validated();
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -100,7 +96,8 @@ class UserController extends Controller
         );
 
         return response()->json([
-            'message' => 'Successfully password changed'
+            'message' => 'Successfully password changed',
+            'status' => $status
         ], 200);
     }
 }
