@@ -49,9 +49,13 @@ class FeedbackService
                 unset($data['image_path']);
             }
 
+            if ($userPurchasedTheProduct->status !== 'completed') {
+                throw new HttpException(403, 'Your product has not yet been delivered. Feedback will only be possible once the item has been received.');
+            }
+
             $feedback = $this->feedbackRepositories->createFeedback($data);
 
-            return $feedback;
+            return  $feedback;
         } catch (\Exception $error) {
             return response()->json(['error' => $error->getMessage()], 500);
         }

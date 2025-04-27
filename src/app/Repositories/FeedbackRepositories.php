@@ -18,7 +18,7 @@ class FeedbackRepositories
 
         $order = Order::where('user_id', $data['user_id'])->whereHas('orderItems', function ($query) use ($product_id) {
             $query->where('product_id', $product_id);
-        })->with('orderItems')->exists();
+        })->with('orderItems')->first();
 
         return $order;
     }
