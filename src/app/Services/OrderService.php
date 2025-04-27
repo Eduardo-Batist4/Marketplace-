@@ -81,7 +81,7 @@ class OrderService
 
             $total_amount = $this->applyCoupon($totalCart, $data['coupon_id'] ?? null);
 
-            $order->update(['total_amount' => $total_amount]);
+            $order->update(['total_amount' => number_format($total_amount, 2, ',', '.')]);
 
             DB::commit();
             
