@@ -26,7 +26,6 @@ class UpdateProductRequest extends FormRequest
             'price' => 'sometimes|numeric',
             'stock' => 'sometimes|numeric',
             'category_id' => 'sometimes|numeric|exists:categories,id',
-            'image_path' => 'sometimes|string',
             'description' => 'sometimes|string|max:255' 
         ];
     }
