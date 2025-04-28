@@ -28,7 +28,7 @@ class CartItemController extends Controller
         ], 201);
     }
 
-    public function update(UpdateCartItemRequest $request, string $id)
+    public function update(UpdateCartItemRequest $request, int $id)
     {
         $validateDate = $request->validated();
 
@@ -37,7 +37,7 @@ class CartItemController extends Controller
         return response()->json($category, 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         $this->cartItemService->deleteCartItem($id);
 

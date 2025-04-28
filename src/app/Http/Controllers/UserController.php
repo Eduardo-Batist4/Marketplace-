@@ -6,12 +6,8 @@ use App\Http\Requests\ForgotPassword;
 use App\Http\Requests\ResetPassword;
 use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Models\User;
 use App\Services\PasswordService;
 use App\Services\UserService;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -29,7 +25,7 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function update(UpdateUserRequest $request, $id) 
+    public function update(UpdateUserRequest $request, int $id) 
     {
         $validateData = $request->validated();
         

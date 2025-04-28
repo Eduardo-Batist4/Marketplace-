@@ -45,12 +45,16 @@ class AuthController extends Controller
         DB::beginTransaction();
         try {
             $validateData = $request->validated();
-    
-            $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
-    
-            $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
-    
-            $validateData['image_path'] = $path;
+
+            if (!empty($data['image_path'])) {
+                $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+        
+                $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
+        
+                $validateData['image_path'] = $path;
+            } else {
+                unset($validateData['image_path']);
+            }
 
             $user = $this->userServices->createUser($validateData);
     

@@ -28,12 +28,12 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    public function show(string $id)
+    public function show(int $id)
     {
         return $this->categoryService->getCategory($id);
     }
 
-    public function update(UpdateCategoryRequest $request, string $id)
+    public function update(UpdateCategoryRequest $request, int $id)
     {
         $validateDate = $request->validated();
 
@@ -45,7 +45,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         response($this->categoryService->deleteCategory($id), 204);
         return response()->json([

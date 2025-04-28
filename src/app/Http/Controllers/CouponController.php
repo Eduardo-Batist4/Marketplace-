@@ -28,12 +28,12 @@ class CouponController extends Controller
         ], 201);
     }
 
-    public function show(string $id)
+    public function show(int $id)
     {
         return $this->couponService->getCoupon($id);
     }
 
-    public function update(UpdateCouponRequest $request, string $id)
+    public function update(UpdateCouponRequest $request, int $id)
     {
         $validateDate = $request->validated();
 

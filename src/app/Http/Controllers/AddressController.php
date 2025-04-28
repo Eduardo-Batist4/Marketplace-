@@ -33,7 +33,7 @@ class AddressController extends Controller
         ], 201);
     }
 
-    public function update(UpdateAddressRequest $request, string $id)
+    public function update(UpdateAddressRequest $request, int $id)
     {
         $validateData = $request->validated();
 
@@ -47,7 +47,7 @@ class AddressController extends Controller
         ], 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         $this->addressService->deleteAddress($id, JWTAuth::user()->id);
 

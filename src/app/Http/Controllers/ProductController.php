@@ -35,7 +35,7 @@ class ProductController extends Controller
         return $this->productService->getProduct($id);
     }
 
-    public function update(UpdateProductRequest $request, string $id)
+    public function update(UpdateProductRequest $request, int $id)
     {
         $validateData = $request->validated();
 
@@ -47,7 +47,7 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         $this->productService->deleteProduct($id);
 

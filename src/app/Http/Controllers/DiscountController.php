@@ -27,7 +27,7 @@ class DiscountController extends Controller
         ], 201);
     }
 
-    public function show(string $id)
+    public function show(int $id)
     {
         return $this->discountService->getDiscount($id);
     }
@@ -44,7 +44,7 @@ class DiscountController extends Controller
         ], 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         $this->discountService->deleteDiscount($id);
 
