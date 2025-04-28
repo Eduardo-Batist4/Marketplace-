@@ -11,49 +11,29 @@ class CouponService
 
     public function getAllCoupon()
     {
-        try {
-            return $this->couponRepositories->getAllCoupons();
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        return $this->couponRepositories->getAllCoupons();
     }
 
     public function createCoupon(array $data)
     {
-        try {
-            $coupon = $this->couponRepositories->createCoupon($data);
-            return $coupon;
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        $coupon = $this->couponRepositories->createCoupon($data);
+        return $coupon;
     }
 
     public function getCoupon(int $id)
     {
-        try {
-            return $this->couponRepositories->getCoupon($id);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        return $this->couponRepositories->getCoupon($id);
     }
 
     public function updateCoupon(array $data, int $id)
     {
-        try {
-            $this->couponRepositories->getCoupon($id);
-            return $this->couponRepositories->updateCoupon($data, $id);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        $this->couponRepositories->getCoupon($id);
+        return $this->couponRepositories->updateCoupon($data, $id);
     }
 
     public function deleteCoupon(int $id)
     {
-        try {
-            $this->couponRepositories->getCoupon($id);
-            return $this->couponRepositories->deleteCoupon($id);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        $this->couponRepositories->getCoupon($id);
+        return $this->couponRepositories->deleteCoupon($id);
     }
 }

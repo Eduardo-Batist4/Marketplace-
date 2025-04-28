@@ -13,12 +13,6 @@ class OrderItemService
 
     public function createOrderItem(array $data)
     {
-        try {
-            return $this->orderItemRepositories->createOrderItem($data);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        return $this->orderItemRepositories->createOrderItem($data);
     }
-
-
 }

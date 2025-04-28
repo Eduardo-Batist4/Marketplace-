@@ -11,42 +11,34 @@ class PasswordService
 {
     public function forgotPassword($data)
     {
-        try {
-            $status = Password::sendResetLink(
-                ['email' => $data['email']]
-            );
-    
-            if($status !== Password::RESET_LINK_SENT) {
-                return response()->json([
-                    'message' => 'Email not sent'
-                ], 400);
-            }
+        $status = Password::sendResetLink(
+            ['email' => $data['email']]
+        );
 
-            return $status;
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
+        if ($status !== Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => 'Email not sent'
+            ], 400);
         }
+
+        return $status;
     }
 
     public function resetPassword($data)
     {
-        try {
-            $status = Password::reset(
-                $data,
-                function (User $user, string $password) {
-                    $user->forceFill([
-                        'password' => Hash::make($password)
-                    ]);
-         
-                    $user->save();
-         
-                    event(new PasswordReset($user));
-                }
-            );
+        $status = Password::reset(
+            $data,
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ]);
 
-            return $status;
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status;
     }
 }
