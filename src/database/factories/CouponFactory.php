@@ -11,7 +11,7 @@ class CouponFactory extends Factory
 {
     public function definition(): array
     {
-        $discount_percentage = fake()->numberBetween(1, 60);
+        $discount_percentage = fake()->numberBetween(1, 12) * 5;
 
         return [
             'code' => strtoupper(fake()->lexify('????') . sprintf('%02d', $discount_percentage)),
