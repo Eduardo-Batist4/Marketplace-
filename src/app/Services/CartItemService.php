@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
+use App\Exceptions\InsufficientQuantityException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repositories\CartItemRepositories;
 use App\Repositories\CartRepositories;
 use App\Repositories\ProductRepositories;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CartItemService
 {
-
     public function __construct(
         protected CartItemRepositories $cartItemRepositories,
         protected ProductRepositories $productRepositories,
@@ -18,57 +18,41 @@ class CartItemService
 
     public function getAllCartItems(int $id)
     {
-        try {
-            $cart = $this->cartRepositories->getCartWithUserID($id)->load('cartItems');
-            return $cart;
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        $cart = $this->cartRepositories->getCartWithUserID($id)->load('cartItems');
+        return $cart;
     }
 
     public function createCartItem(array $data, int $id)
     {
-        try {
-            $cart = $this->cartRepositories->getCartWithUserID($id);
-            $data['cart_id'] = $cart->id;
+        $cart = $this->cartRepositories->getCartWithUserID($id);
+        $data['cart_id'] = $cart->id;
 
-            $productPrice = $this->productRepositories->getProduct($data['product_id']);
-            $data['unit_price'] = $productPrice->price;
+        $productPrice = $this->productRepositories->getProduct($data['product_id']);
+        $data['unit_price'] = $productPrice->price;
 
-            if ($data['quantity'] > $productPrice->stock) {
-                throw new HttpException(422, 'Quantity exceeds available stock.');
-            }
-
-            return $this->cartItemRepositories->createCartItem($data);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
+        if ($data['quantity'] > $productPrice->stock) {
+            throw new InsufficientQuantityException();
         }
+
+        return $this->cartItemRepositories->createCartItem($data);
     }
 
     public function updateCartItem(array $data, string $id)
     {
-        try {
-            $cartItems = $this->cartItemRepositories->getCartItem($id);
+        $cartItems = $this->cartItemRepositories->getCartItem($id);
 
-            $product = $this->productRepositories->getProduct($cartItems->product_id);
+        $product = $this->productRepositories->getProduct($cartItems->product_id);
 
-            if ($data['quantity'] > $product->stock) {
-                throw new HttpException(422, 'Quantity exceeds available stock.');
-            }
-
-            return $this->cartItemRepositories->updateCartItem($data, $id);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
+        if ($data['quantity'] > $product->stock) {
+            throw new InsufficientQuantityException();
         }
+
+        return $this->cartItemRepositories->updateCartItem($data, $id);
     }
 
     public function deleteCartItem(string $id)
     {
-        try {
-            $this->cartItemRepositories->getCartItem($id);
-            return $this->cartItemRepositories->deleteCartItem($id);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        $this->cartItemRepositories->getCartItem($id);
+        return $this->cartItemRepositories->deleteCartItem($id);
     }
 }

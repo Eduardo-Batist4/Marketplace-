@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ResourceNotFoundException;
 use App\Jobs\SendOrderCreateEMail;
 use App\Jobs\SendOrderStatusEmail;
 use App\Repositories\AddressRepositories;
@@ -42,7 +43,7 @@ class OrderService
 
         $address = $this->addressRepositories->getAddressWithUser($user->id, $data['address_id']);
         if (!$address) {
-            throw new HttpException(404, 'Address not found!');
+            throw new ResourceNotFoundException();
         }
 
         $cartItems = $user->cart->cartItems;

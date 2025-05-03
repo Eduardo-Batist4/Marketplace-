@@ -11,10 +11,6 @@ class CartService
 
     public function createCart(array $data)
     {
-        try {
-            return $this->cartRepositories->createCart($data);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
+        return $this->cartRepositories->createCart($data);
     }
 }
