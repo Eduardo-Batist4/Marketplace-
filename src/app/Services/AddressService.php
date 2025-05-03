@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
+use App\Exceptions\AccessDeniedException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Repositories\AddressRepositories;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AddressService
 {
@@ -15,7 +16,7 @@ class AddressService
         $address = $this->addressRepositories->getAllAddress($id);
 
         if (!$address) {
-            return response()->json('No records found.', 200);
+            throw new ResourceNotFoundException();
         }
 
         return $address;
@@ -31,7 +32,7 @@ class AddressService
         $address = $this->addressRepositories->getAddress($id);
 
         if ($address->user_id != $user_id) {
-            throw new HttpException(403, 'Access denied.');
+            throw new AccessDeniedException();
         }
 
         return $this->addressRepositories->updateAddress($data, $id);
@@ -42,7 +43,7 @@ class AddressService
         $address = $this->addressRepositories->getAddress($id);
 
         if ($address->user_id != $user_id) {
-            throw new HttpException(403, 'Access denied.');
+            throw new AccessDeniedException();
         }
 
         return $this->addressRepositories->deleteAddress($id);
