@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\AccessDeniedException;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CheckUserIsAdmin
@@ -20,7 +20,7 @@ class CheckUserIsAdmin
         $user = JWTAuth::user();
 
         if (!$user || $user->role !== 'admin') {
-            throw new HttpException(403, 'Access denied.'); 
+            throw new AccessDeniedException(); 
         }
         return $next($request);
     }
