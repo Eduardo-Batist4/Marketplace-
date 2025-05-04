@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\AccessDeniedException;
+use App\Exceptions\NoItemsCartException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Jobs\SendOrderCreateEMail;
 use App\Jobs\SendOrderStatusEmail;
@@ -11,7 +13,6 @@ use App\Repositories\CouponRepositories;
 use App\Repositories\OrdersRepositories;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OrderService
 {
@@ -48,7 +49,7 @@ class OrderService
 
         $cartItems = $user->cart->cartItems;
         if ($cartItems->isEmpty()) {
-            throw new HttpException(404, 'No items in the cart');
+            throw new NoItemsCartException();
         }
 
         DB::beginTransaction();
@@ -121,7 +122,7 @@ class OrderService
     public function updateStatus(array $data, int $id, int $user_id)
     {
         if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
-            throw new HttpException(403, 'Access denied.');
+            throw new AccessDeniedException();
         }
 
         $user = $this->userRepositories->getUser($user_id);
