@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Exceptions\AccessDeniedException;
+use App\Exceptions\AlreadyGivenFeedbackException;
+use App\Exceptions\DelivereFeedbackException;
 use App\Repositories\FeedbackRepositories;
 use App\Repositories\OrdersRepositories;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Str;
 
 class FeedbackService
@@ -27,12 +29,12 @@ class FeedbackService
     {
         $userPurchasedTheProduct = $this->feedbackRepositories->userHasOrder($data);
         if (!$userPurchasedTheProduct) {
-            throw new HttpException(403, 'Not permission.');
+            throw new AccessDeniedException();
         }
 
         $userHasAlreadyGivenFeedback = $this->feedbackRepositories->userHasAlreadyGivenFeedback($data['user_id'], $data['product_id']);
         if ($userHasAlreadyGivenFeedback) {
-            throw new HttpException(403, 'You have already given feedback.');
+            throw new AlreadyGivenFeedbackException();
         }
 
         if (!empty($data['image_path'])) {
@@ -45,7 +47,7 @@ class FeedbackService
         }
 
         if ($userPurchasedTheProduct->status !== 'completed') {
-            throw new HttpException(403, 'Your product has not yet been delivered. Feedback will only be possible once the item has been received.');
+            throw new DelivereFeedbackException();
         }
 
         $feedback = $this->feedbackRepositories->createFeedback($data);
@@ -62,7 +64,7 @@ class FeedbackService
     {
         $feedbackUser = $this->feedbackRepositories->getFeedback($id);
         if ($user_id != $feedbackUser->user_id) {
-            throw new HttpException(403, 'Not permission.');
+            throw new AccessDeniedException();
         }
 
         return $this->feedbackRepositories->updateFeedback($data, $id);
