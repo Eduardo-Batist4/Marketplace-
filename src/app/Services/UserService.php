@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\AccessDeniedException;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -27,7 +28,7 @@ class UserService
         $user = $this->userRepositories->getUser($id);
 
         if($user->id !== $user_id) {
-            throw new HttpException(403, 'Access denied.');
+            throw new AccessDeniedException();
         }
 
         return $this->userRepositories->getUser($id)->load('address', 'cart');
@@ -38,7 +39,7 @@ class UserService
         $user = $this->userRepositories->getUser($id);
 
         if($user->id !== $user_id) {
-            throw new HttpException(403, 'Access denied.');
+            throw new AccessDeniedException();
         }
 
         return $this->userRepositories->updateUser($data, $id);
@@ -54,7 +55,7 @@ class UserService
         $user = $this->userRepositories->getUser($id);
 
         if($user->id !== $user_id) {
-            throw new HttpException(403, 'Access denied.');
+            throw new AccessDeniedException();
         }
 
         if ($user->image_path) {
@@ -73,7 +74,7 @@ class UserService
         $user = $this->userRepositories->getUser($id);
 
         if($user->id !== $user_id) {
-            throw new HttpException(403, 'Access denied.');
+            throw new AccessDeniedException();
         }
 
         return $this->userRepositories->deleteUser($id);

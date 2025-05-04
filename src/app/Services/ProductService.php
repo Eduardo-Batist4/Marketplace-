@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Exceptions\NoRegisteredProductException;
 use App\Repositories\ProductRepositories;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
+use function PHPUnit\Framework\isEmpty;
 
 class ProductService
 {
@@ -18,10 +21,6 @@ class ProductService
     public function getAllProducts(array $filter)
     {
         $product = $this->productRepositories->getAllProducts($filter);
-
-        if (!$product) {
-            return response()->json('No registered product!');
-        }
 
         return $product;
     }
