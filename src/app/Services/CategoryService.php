@@ -2,38 +2,38 @@
 
 namespace App\Services;
 
-use App\Repositories\CategoryRepositories;
-use App\Repositories\UserRepositories;
+use App\Models\Category;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CategoryService
 {
-
-    public function __construct(protected CategoryRepositories $categoryRepositories, protected UserRepositories $userRepositories) {}
-
-    public function getAllCategories()
+    public function getAllCategories(): LengthAwarePaginator
     {
-        return $this->categoryRepositories->getAllCategory();
+        return Category::paginate(15);
     }
 
-    public function createCategory(array $data)
+    public function createCategory(array $data): Category
     {
-        $category = $this->categoryRepositories->createCategory($data);
+        $category = Category::create($data);
         return $category;
     }
 
-    public function getCategory(int $id)
+    public function getCategory(int $id): Category
     {
-        return $this->categoryRepositories->getCategory($id);
+        $category = Category::findOrFail($id);
+        return $category;
     }
 
-    public function updateCategory(array $data, int $id)
+    public function updateCategory(array $data, int $id): Category
     {
-        return $this->categoryRepositories->updateCategory($data, $id);
+        $category = Category::findOrFail($id);
+        $category->update($data);
+        return $category->fresh();
     }
 
-    public function deleteCategory(int $id)
+    public function deleteCategory(int $id): bool
     {
-        $this->categoryRepositories->findCategory($id);
-        return $this->categoryRepositories->deleteCategory($id);
+        $category = Category::findOrFail($id);
+        return $category->delete();
     }
 }

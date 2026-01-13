@@ -4,52 +4,50 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Services\CategoryService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
 
     public function __construct(protected CategoryService $categoryService) {}
 
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        return $this->categoryService->getAllCategories();
+        $categories = $this->categoryService->getAllCategories();
+        return  CategoryResource::collection($categories);
     }
 
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $validateDate = $request->validated();
+        $validatedData = $request->validated();
 
-        $category = $this->categoryService->createCategory($validateDate);
+        $category = $this->categoryService->createCategory($validatedData);
 
-        return response()->json([
-            'message' => 'Successfully created!',
-            'category' => $category
-        ], 201);
+        return CategoryResource::make($category)->response()->setStatusCode(201);
     }
 
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
-        return $this->categoryService->getCategory($id);
+        $category = $this->categoryService->getCategory($id);
+        return CategoryResource::make($category)->response();
     }
 
-    public function update(UpdateCategoryRequest $request, int $id)
+    public function update(UpdateCategoryRequest $request, int $id): JsonResponse
     {
-        $validateDate = $request->validated();
+        $validatedData = $request->validated();
 
-        $category = $this->categoryService->updateCategory($validateDate, $id);
+        $category = $this->categoryService->updateCategory($validatedData, $id);
 
-        return response()->json([
-            'message' => 'Successfully updated!',
-            'category' => $category
-        ], 200);
+        return CategoryResource::make($category)->response()->setStatusCode(200);
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): Response
     {
-        response($this->categoryService->deleteCategory($id), 204);
-        return response()->json([
-            'message' => 'Successfully deleted!',
-        ], 204);  
+        $this->categoryService->deleteCategory($id);
+        return response()->noContent();
     }
 }
