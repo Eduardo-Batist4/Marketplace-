@@ -40,11 +40,11 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/users/{id}/role', [RoleController::class, 'update'])->middleware('is_admin');
 
     // Users
-    Route::get('/users/{id}', [UserController::class, 'show']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
-    // Update User Image
-    Route::put('/users/{id}/update-image', [UserController::class, 'updateImage']);
+    Route::get('/users/{id}', [UserController::class, 'show'])->middleware('is_admin');
+    Route::get('/users', [UserController::class, 'me']);
+    Route::put('/users', [UserController::class, 'update']);
+    Route::delete('/users', [UserController::class, 'destroy']);
+    Route::put('/users/update-image', [UserController::class, 'updateImage']);
 
     // Address
     Route::get('/addresses', [AddressController::class, 'index']);

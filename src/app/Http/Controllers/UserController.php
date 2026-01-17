@@ -8,6 +8,8 @@ use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\PasswordService;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -18,43 +20,45 @@ class UserController extends Controller
         protected PasswordService $passwordService
     ) {}
 
-    public function show(int $id)
+    public function me(): JsonResponse
     {
-        $user = $this->userService->getUser($id, JWTAuth::user()->id);
+        $id = JWTAuth::user()->id;
+        $user = $this->userService->getUser($id);
 
         return response()->json($user, 200);
     }
 
-    public function update(UpdateUserRequest $request, int $id) 
+    public function show(int $id): JsonResponse
+    {
+        $user = $this->userService->getAllUsers($id);
+
+        return response()->json($user, 200);
+    }
+
+    public function update(UpdateUserRequest $request): JsonResponse
     {
         $validateData = $request->validated();
-        
-        $user = $this->userService->updateUser($validateData, $id, JWTAuth::user()->id);
-        
-        return response()->json([
-            'message' => 'Successfully updated!',
-            'user' => $user
-        ], 200);
+        $user = $this->userService->updateUser($validateData, JWTAuth::user()->id);
+
+        return response()->json($user, 200);
     }
 
-    public function updateImage(UpdateUserImageRequest $request, int $id)
+    public function updateImage(UpdateUserImageRequest $request)
     {
-        $request->validated();
-
-        $this->userService->updateUserImage($request, $id, JWTAuth::user()->id);
+        $image = $request->file('image_path');
+        $this->userService->updateUserImage($image, JWTAuth::user()->id);
 
         return response()->json([
             'message' => 'Successfully updated!',
         ], 200);
     }
 
-    public function destroy(int $id)
+    public function destroy(): Response
     {
-        $this->userService->deleteUser($id, JWTAuth::user()->id);
+        $id = JWTAuth::user()->id;
+        $this->userService->deleteUser($id);
 
-        return response()->json([
-            'message' => 'Successfully deleted!',
-        ], 204);
+        return response()->noContent();
     }
 
     public function forgotPassword(ForgotPassword $request)

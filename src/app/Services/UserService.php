@@ -2,81 +2,66 @@
 
 namespace App\Services;
 
-use App\Exceptions\AccessDeniedException;
-use App\Repositories\UserRepositories;
+use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Str;
 
 class UserService
 {
 
-    public function __construct(protected UserRepositories $userRepositories) {}
-
     public function findUserWithEmail($email)
     {
-        return $this->userRepositories->findUserWithEmail($email);
+        return User::where('email', $email)->first();
     }
 
-    public function createUser(array $data)
+    public function getUser(int $id): User
     {
-        return $this->userRepositories->createUser($data);
+        $user = User::findOrFail($id);
+        return $user->load('address', 'cart');
     }
 
-    public function getUser(int $id, int $user_id)
+    public function getAllUsers(int $userId): User
     {
-        $user = $this->userRepositories->getUser($id);
+        $user = User::findOrFail($userId);
+        return $user->load('address', 'cart');
 
-        if($user->id !== $user_id) {
-            throw new AccessDeniedException();
-        }
-
-        return $this->userRepositories->getUser($id)->load('address', 'cart');
     }
 
-    public function updateUser($data, $id, $user_id)
+    public function createUser(array $data): User
     {
-        $user = $this->userRepositories->getUser($id);
-
-        if($user->id !== $user_id) {
-            throw new AccessDeniedException();
-        }
-
-        return $this->userRepositories->updateUser($data, $id);
+        return User::create($data);
     }
 
-    public function updateUserAdmin($data, $id)
+    public function updateUser(array $data, int $id): User
     {
-        return $this->userRepositories->updateUser($data, $id); 
+        $user = User::findOrFail($id);
+        $user->update($data);
+        return $user->fresh();
     }
 
-    public function updateUserImage($request, $id, $user_id)
+    public function updateUserImage(UploadedFile $image, int $id)
     {
-        $user = $this->userRepositories->getUser($id);
-
-        if($user->id !== $user_id) {
-            throw new AccessDeniedException();
-        }
+        $user = User::findOrFail($id);
 
         if ($user->image_path) {
-            Storage::delete('public/' . $user->image_path);
+            Storage::disk('public')->delete($user->image_path);
         }
 
-        $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
+        $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
 
-        $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
+        $path = $image->storeAs('profiles', $imageName, 'public');
 
-        return $this->userRepositories->updateUser(['image_path' => $path], $id);
+        $user->update([
+            'image_path' => $path,
+        ]);
+
+        return $user->fresh();
     }
 
-    public function deleteUser(int $id, int $user_id)
+    public function deleteUser(int $id): bool
     {
-        $user = $this->userRepositories->getUser($id);
-
-        if($user->id !== $user_id) {
-            throw new AccessDeniedException();
-        }
-
-        return $this->userRepositories->deleteUser($id);
+        $user = User::findOrFail($id);
+        return $user->delete();
     }
 }
