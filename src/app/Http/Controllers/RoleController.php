@@ -15,7 +15,7 @@ class RoleController extends Controller
             'role' => 'required|in:moderator,admin'
         ]);
 
-        $user = $this->userService->updateUserAdmin($validateData, $id);
+        $user = $this->userService->updateUser($validateData, $id);
 
         return response()->json([
             'message' => 'User successfully updated!',
