@@ -9,31 +9,21 @@ use Illuminate\Support\Facades\Password;
 
 class PasswordService
 {
-    public function forgotPassword($data)
+    public function forgotPassword($data): bool
     {
-        $status = Password::sendResetLink(
+        return Password::sendResetLink(
             ['email' => $data['email']]
-        );
-
-        if ($status !== Password::RESET_LINK_SENT) {
-            return response()->json([
-                'message' => 'Email not sent'
-            ], 400);
-        }
-
-        return $status;
+        ) === Password::RESET_LINK_SENT;
     }
 
-    public function resetPassword($data)
+    public function resetPassword($data): bool
     {
         $status = Password::reset(
             $data,
             function (User $user, string $password) {
-                $user->forceFill([
+                $user->update([
                     'password' => Hash::make($password)
                 ]);
-
-                $user->save();
 
                 event(new PasswordReset($user));
             }

@@ -43,14 +43,12 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function updateImage(UpdateUserImageRequest $request)
+    public function updateImage(UpdateUserImageRequest $request): Response
     {
         $image = $request->file('image_path');
         $this->userService->updateUserImage($image, JWTAuth::user()->id);
 
-        return response()->json([
-            'message' => 'Successfully updated!',
-        ], 200);
+        return response()->noContent();
     }
 
     public function destroy(): Response
@@ -61,27 +59,20 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    public function forgotPassword(ForgotPassword $request)
+    public function forgotPassword(ForgotPassword $request): Response
     {
         $validateData = $request->validated();
 
-        $status = $this->passwordService->forgotPassword($validateData);
+        $this->passwordService->forgotPassword($validateData);
 
-        return response()->json([
-            'message' => 'Successfully send email!',
-            'status' => $status
-        ], 200);
+        return response()->noContent();
     }
 
-    public function resetPassword(ResetPassword $request)
+    public function resetPassword(ResetPassword $request): Response
     {
         $validateData = $request->validated();
+        $this->passwordService->resetPassword($validateData);
 
-        $status = $this->passwordService->resetPassword($validateData);
-
-        return response()->json([
-            'message' => 'Successfully password changed',
-            'status' => $status
-        ], 200);
+        return response()->noContent();
     }
 }
