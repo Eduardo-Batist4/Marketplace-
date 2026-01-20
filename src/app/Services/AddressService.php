@@ -4,48 +4,51 @@ namespace App\Services;
 
 use App\Exceptions\AccessDeniedException;
 use App\Exceptions\ResourceNotFoundException;
+use App\Models\Address;
 use App\Repositories\AddressRepositories;
+use Illuminate\Database\Eloquent\Collection;
 
 class AddressService
 {
 
     public function __construct(protected AddressRepositories $addressRepositories) {}
 
-    public function getAllAddress(int $id)
+    public function getAllAddress($id): Collection
     {
-        $address = $this->addressRepositories->getAllAddress($id);
+        $addresses = Address::where('user_id', $id)->get();
 
-        if (!$address) {
+        if (!$addresses) {
             throw new ResourceNotFoundException();
         }
 
-        return $address;
+        return $addresses;
     }
 
-    public function createAddress(array $data)
+    public function createAddress(array $data): Address
     {
-        return $this->addressRepositories->createAddress($data);
+        return Address::create($data);
     }
 
-    public function updateAddress(array $data, string $id, int $user_id)
+    public function updateAddress(array $data, string $id, int $user_id): Address
     {
-        $address = $this->addressRepositories->getAddress($id);
+        $address = Address::findOrFail($id);
 
         if ($address->user_id != $user_id) {
             throw new AccessDeniedException();
         }
 
-        return $this->addressRepositories->updateAddress($data, $id);
+        $address->update($data);
+        return $address->fresh();
     }
 
-    public function deleteAddress(string $id, int $user_id)
+    public function deleteAddress(string $id, int $user_id): bool
     {
-        $address = $this->addressRepositories->getAddress($id);
+        $address = Address::findOrFail($id);
 
         if ($address->user_id != $user_id) {
             throw new AccessDeniedException();
         }
 
-        return $this->addressRepositories->deleteAddress($id);
+        return $address->delete();
     }
 }
