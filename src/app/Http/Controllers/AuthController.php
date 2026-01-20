@@ -29,7 +29,7 @@ class AuthController extends Controller
                 ], 400);
             }
 
-            return response()->json($token, 200);
+            return response()->json(["token" => $token], 200);
         } catch (JWTException $error) {
             return response()->json($error, 500);
         }
