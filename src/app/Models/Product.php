@@ -42,4 +42,21 @@ class Product extends Model
     {
         return $this->hasMany(Feedback::class);
     }
+
+    public function scopeFilter($query, array $filter)
+    {
+        return $query
+            ->when($filter['name'] ?? null, fn ($q, $name) =>
+                $q->where('name', 'like', "%{$name}%")
+            )
+            ->when($filter['category_id'] ?? null, fn ($q, $categoryId) =>
+                $q->where('category_id', $categoryId)
+            )
+            ->when($filter['min_price'] ?? null, fn ($q, $min) =>
+                $q->where('price', '>=', $min)
+            )
+            ->when($filter['max_price'] ?? null, fn ($q, $max) =>
+                $q->where('price', '<=', $max)
+            );
+    }
 }
