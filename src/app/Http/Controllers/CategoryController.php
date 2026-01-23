@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class CategoryController extends Controller
@@ -15,10 +14,13 @@ class CategoryController extends Controller
 
     public function __construct(protected CategoryService $categoryService) {}
 
-    public function index(): AnonymousResourceCollection
+    public function index(): JsonResponse
     {
         $categories = $this->categoryService->getAllCategories();
-        return  CategoryResource::collection($categories);
+        return response()->json(
+            CategoryResource::collection($categories),
+            201
+        );
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse
@@ -27,13 +29,19 @@ class CategoryController extends Controller
 
         $category = $this->categoryService->createCategory($validatedData);
 
-        return CategoryResource::make($category)->response()->setStatusCode(201);
+        return response()->json(
+            CategoryResource::make($category),
+            201
+        );
     }
 
     public function show(int $id): JsonResponse
     {
         $category = $this->categoryService->getCategory($id);
-        return CategoryResource::make($category)->response();
+        return response()->json(
+            CategoryResource::make($category),
+            200
+        );
     }
 
     public function update(UpdateCategoryRequest $request, int $id): JsonResponse
@@ -42,7 +50,10 @@ class CategoryController extends Controller
 
         $category = $this->categoryService->updateCategory($validatedData, $id);
 
-        return CategoryResource::make($category)->response()->setStatusCode(200);
+        return response()->json(
+            CategoryResource::make($category),
+            200
+        );
     }
 
     public function destroy(int $id): Response
