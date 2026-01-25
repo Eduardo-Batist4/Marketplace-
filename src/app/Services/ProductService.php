@@ -2,30 +2,19 @@
 
 namespace App\Services;
 
-use App\Exceptions\NoRegisteredProductException;
-use App\Repositories\ProductRepositories;
-use App\Repositories\UserRepositories;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-use function PHPUnit\Framework\isEmpty;
-
 class ProductService
 {
-
-    public function __construct(
-        protected ProductRepositories $productRepositories,
-        protected UserRepositories $userRepositories
-    ) {}
-
-    public function getAllProducts(array $filter)
+    public function getAllProducts(array $filter): Collection
     {
-        $product = $this->productRepositories->getAllProducts($filter);
-
-        return $product;
+        return Product::filter($filter)->with('discounts')->get();
     }
 
-    public function createProduct(array $data)
+    public function createProduct(array $data): Product
     {
         $image = $data['image_path'];
         $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
@@ -34,22 +23,28 @@ class ProductService
 
         $data['image_path'] = $path;
 
-        return $this->productRepositories->createProduct($data);
+        $product = Product::create($data);
+        return $product;
     }
 
-    public function getProduct(int $id)
+    public function getProduct(int $id): Product
     {
-        return $this->productRepositories->getProduct($id);
+        $product = Product::findOrFail($id)->load('discounts');
+        return $product;
     }
 
-    public function updateProduct(array $data, int $id)
+    public function updateProduct(array $data, int $id): Product
     {
-        return $this->productRepositories->updateProduct($data, $id);
+        $product = Product::findOrFail($id);
+
+        $product->update($data);
+
+        return $product->fresh();
     }
 
-    public function deleteProduct(int $id)
+    public function deleteProduct(int $id): bool
     {
-        $this->productRepositories->getProduct($id);
-        return $this->productRepositories->deleteProduct($id);
+        $product = Product::findOrFail($id);
+        return $product->delete();
     }
 }

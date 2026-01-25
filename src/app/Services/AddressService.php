@@ -5,14 +5,10 @@ namespace App\Services;
 use App\Exceptions\AccessDeniedException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Models\Address;
-use App\Repositories\AddressRepositories;
 use Illuminate\Database\Eloquent\Collection;
 
 class AddressService
 {
-
-    public function __construct(protected AddressRepositories $addressRepositories) {}
-
     public function getAllAddress($id): Collection
     {
         $addresses = Address::where('user_id', $id)->get();
