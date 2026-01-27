@@ -2,38 +2,37 @@
 
 namespace App\Services;
 
-use App\Repositories\CouponRepositories;
+use App\Models\Coupon;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CouponService
 {
-
-    public function __construct(protected CouponRepositories $couponRepositories) {}
-
-    public function getAllCoupon()
+    public function getAllCoupon(): LengthAwarePaginator
     {
-        return $this->couponRepositories->getAllCoupons();
+        return Coupon::paginate(15);
     }
 
-    public function createCoupon(array $data)
+    public function createCoupon(array $data): Coupon
     {
-        $coupon = $this->couponRepositories->createCoupon($data);
+        $coupon = Coupon::create($data);
         return $coupon;
     }
 
-    public function getCoupon(int $id)
+    public function getCoupon(int $id): Coupon
     {
-        return $this->couponRepositories->getCoupon($id);
+        return Coupon::findOrFail($id);
     }
 
-    public function updateCoupon(array $data, int $id)
+    public function updateCoupon(array $data, int $id): Coupon
     {
-        $this->couponRepositories->getCoupon($id);
-        return $this->couponRepositories->updateCoupon($data, $id);
+        $coupon = Coupon::findOrFail($id);
+        $coupon->update($data);
+        return $coupon->fresh();
     }
 
-    public function deleteCoupon(int $id)
+    public function deleteCoupon(int $id): bool
     {
-        $this->couponRepositories->getCoupon($id);
-        return $this->couponRepositories->deleteCoupon($id);
+        $coupon = Coupon::findOrFail($id);
+        return $coupon->delete();
     }
 }

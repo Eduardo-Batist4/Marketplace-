@@ -36,11 +36,7 @@ Route::post('/reset-password', [UserController::class, 'resetPassword']);
 
 Route::middleware('auth:api')->group(function () {
 
-    // Switch role
-    Route::put('/users/{id}/role', [RoleController::class, 'update'])->middleware('is_admin');
-
     // Users
-    Route::get('/users/{id}', [UserController::class, 'show'])->middleware('is_admin');
     Route::get('/users', [UserController::class, 'me']);
     Route::put('/users', [UserController::class, 'update']);
     Route::delete('/users', [UserController::class, 'destroy']);
@@ -52,22 +48,34 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/addresses/{id}', [AddressController::class, 'update']);
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy']);
 
-    // Category
-    Route::post('/categories', [CategoryController::class, 'store'])->middleware('is_admin');
-    Route::put('/categories/{id}', [CategoryController::class, 'update'])->middleware('is_admin');
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->middleware('is_admin');
 
-    // Product
-    Route::post('/products', [ProductController::class, 'store'])->middleware('is_admin_or_mod');
-    Route::put('/products/{id}', [ProductController::class, 'update'])->middleware('is_admin_or_mod');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->middleware('is_admin_or_mod');
+    Route::middleware(['is_admin'])->group(function () {
+        // Switch role
+        Route::put('/users/{id}/role', [RoleController::class, 'update']);
 
-    // Discount
-    Route::get('/discounts', [DiscountController::class, 'index'])->middleware('is_admin');
-    Route::post('/discounts', [DiscountController::class, 'store'])->middleware('is_admin');
-    Route::get('/discounts/{id}', [DiscountController::class, 'show'])->middleware('is_admin');
-    Route::put('/discounts/{id}', [DiscountController::class, 'update'])->middleware('is_admin');
-    Route::delete('/discounts/{id}', [DiscountController::class, 'destroy'])->middleware('is_admin');
+        // Users
+        Route::get('/users/{id}', [UserController::class, 'show']);
+
+        // Category
+        Route::post('/categories', [CategoryController::class, 'store']);
+        Route::put('/categories/{id}', [CategoryController::class, 'update']);
+        Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+
+        // Discount
+        Route::get('/discounts', [DiscountController::class, 'index']);
+        Route::post('/discounts', [DiscountController::class, 'store']);
+        Route::get('/discounts/{id}', [DiscountController::class, 'show']);
+        Route::put('/discounts/{id}', [DiscountController::class, 'update']);
+        Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
+    });
+
+    Route::middleware(['is_admin_or_mod'])->group(function () {
+        // Product
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::put('/products/{id}', [ProductController::class, 'update']);
+        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
+    });
 
     // Coupon
     Route::get('/coupons', [CouponController::class, 'index'])->middleware('is_admin');
