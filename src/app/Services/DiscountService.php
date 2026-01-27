@@ -3,27 +3,19 @@
 namespace App\Services;
 
 use App\Exceptions\MaxDiscountException;
-use App\Repositories\DiscountRepositories;
-use App\Repositories\UserRepositories;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Models\Discount;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class DiscountService
 {
-
-    public function __construct(
-        protected DiscountRepositories $discountRepositories,
-        protected UserRepositories $userRepositories
-    ) {}
-
-    public function getAllDiscounts()
+    public function getAllDiscounts(): LengthAwarePaginator
     {
-        return $this->discountRepositories->getAllDiscounts();
+        return Discount::paginate(2);
     }
 
-    public function createDiscount(array $data)
+    public function createDiscount(array $data): Discount
     {
-        $allDiscountsForAProduct = $this->discountRepositories->getAllDiscountForProduct($data['product_id']);
-
+        $allDiscountsForAProduct = Discount::where('product_id', $data['product_id'])->get();
         $DiscountLimit = 0;
 
         foreach ($allDiscountsForAProduct as $limit) {
@@ -33,19 +25,19 @@ class DiscountService
             throw new MaxDiscountException();
         }
 
-        $discount = $this->discountRepositories->createDiscount($data);
+        $discount = Discount::create($data);
 
         return $discount;
     }
 
-    public function getDiscount(int $id)
+    public function getDiscount(int $id): Discount
     {
-        return $this->discountRepositories->getDiscount($id);
+        return Discount::findOrFail($id);
     }
 
-    public function updateDiscount(array $data, int $id)
+    public function updateDiscount(array $data, int $id): Discount
     {
-        $allDiscountsForAProduct = $this->discountRepositories->getAllDiscountForProduct($data['product_id']);
+        $allDiscountsForAProduct = Discount::where('product_id', $data['product_id'])->get();
 
         $DiscountLimit = 0;
 
@@ -56,12 +48,15 @@ class DiscountService
             throw new MaxDiscountException();
         }
 
-        return $this->discountRepositories->updateDiscount($data, $id);
+        $discount = Discount::findOrFail($id);
+        $discount->update($data);
+
+        return $discount->fresh();
     }
 
-    public function deleteDiscount(int $id)
+    public function deleteDiscount(int $id): bool
     {
-        $this->discountRepositories->getDiscount($id);
-        return $this->discountRepositories->deleteDiscount($id);
+        $discount = Discount::findOrFail($id);
+        return $discount->delete();
     }
 }

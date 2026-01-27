@@ -4,52 +4,49 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDiscountRequest;
 use App\Http\Requests\UpdateDiscountRequest;
+use App\Http\Resources\DiscountResource;
 use App\Services\DiscountService;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class DiscountController extends Controller
 {
     public function __construct(protected DiscountService $discountService) {}
 
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        return $this->discountService->getAllDiscounts();
+        $discounts = $this->discountService->getAllDiscounts();
+
+        return DiscountResource::collection($discounts);
     }
 
-    public function store(StoreDiscountRequest $request)
+    public function store(StoreDiscountRequest $request): DiscountResource
     {
         $validateDate = $request->validated();
 
         $discount = $this->discountService->createDiscount($validateDate);
 
-        return response()->json([
-            'message' => 'Successfully created!',
-            'discount' => $discount
-        ], 201);
+        return DiscountResource::make($discount);
     }
 
-    public function show(int $id)
+    public function show(int $id): DiscountResource
     {
-        return $this->discountService->getDiscount($id);
+        $discount = $this->discountService->getDiscount($id);
+        return DiscountResource::make($discount);
     }
 
-    public function update(UpdateDiscountRequest $request, string $id)
+    public function update(UpdateDiscountRequest $request, string $id): DiscountResource
     {
         $validateDate = $request->validated();
 
         $discount = $this->discountService->updateDiscount($validateDate, $id);
-
-        return response()->json([
-            'message' => 'Successfully updated!',
-            'discount' => $discount
-        ], 200);
+        return DiscountResource::make($discount);
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): Response
     {
         $this->discountService->deleteDiscount($id);
 
-        return response()->json([
-            'message' => 'Successfully deleted!',
-        ], 204);
+        return response()->noContent();
     }
 }
