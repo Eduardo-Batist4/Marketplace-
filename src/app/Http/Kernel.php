@@ -44,7 +44,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
-    
+
     /**
      * The application's middleware aliases.
      *
@@ -65,6 +65,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'is_admin' => \App\Http\Middleware\CheckUserIsAdmin::class,
-        'is_not_client' => \App\Http\Middleware\CheckUserIsAdminOrModerator::class,
+        'is_admin_or_mod' => \App\Http\Middleware\CheckUserIsAdminOrModerator::class,
     ];
 }

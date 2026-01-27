@@ -58,9 +58,9 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->middleware('is_admin');
 
     // Product
-    Route::post('/products', [ProductController::class, 'store'])->middleware('is_not_client');
-    Route::put('/products/{id}', [ProductController::class, 'update'])->middleware('is_not_client');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->middleware('is_not_client');
+    Route::post('/products', [ProductController::class, 'store'])->middleware('is_admin_or_mod');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->middleware('is_admin_or_mod');
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->middleware('is_admin_or_mod');
 
     // Discount
     Route::get('/discounts', [DiscountController::class, 'index'])->middleware('is_admin');
@@ -92,7 +92,7 @@ Route::middleware('auth:api')->group(function () {
     // Feedback
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
     Route::put('/feedbacks/{id}', [FeedbackController::class, 'update']);
-    Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])->middleware('is_not_client');
+    Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])->middleware('is_admin_or_mod');
 
 });
 
