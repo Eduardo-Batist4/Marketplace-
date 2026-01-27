@@ -22,7 +22,7 @@ class UpdateFeedbackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description' => 'required|string|min:3|max:255' 
+            'description' => 'sometimes|string|min:3|max:255'
         ];
     }
 }
