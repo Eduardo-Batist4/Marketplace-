@@ -3,56 +3,58 @@
 namespace App\Services;
 
 use App\Exceptions\InsufficientQuantityException;
-use App\Exceptions\ResourceNotFoundException;
-use App\Repositories\CartItemRepositories;
-use App\Repositories\CartRepositories;
-use App\Repositories\ProductRepositories;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
 
 class CartItemService
 {
-    public function __construct(
-        protected CartItemRepositories $cartItemRepositories,
-        protected ProductRepositories $productRepositories,
-        protected CartRepositories $cartRepositories
-    ) {}
-
-    public function getAllCartItems(int $id)
+    public function getAllCartItems(int $userId): Collection
     {
-        $cart = $this->cartRepositories->getCartWithUserID($id)->load('cartItems');
-        return $cart;
+        $cart = Cart::where('user_id', $userId)
+            ->with('cartItems.product')
+            ->firstOrFail();
+        return $cart->cartItems;
     }
 
-    public function createCartItem(array $data, int $id)
+    public function createCartItem(array $data, int $userId): CartItem
     {
-        $cart = $this->cartRepositories->getCartWithUserID($id);
+        $cart = Cart::where('user_id', $userId)->firstOrFail();
         $data['cart_id'] = $cart->id;
 
-        $productPrice = $this->productRepositories->getProduct($data['product_id']);
+        $productPrice = Product::findOrFail($data['product_id']);
         $data['unit_price'] = $productPrice->price;
 
         if ($data['quantity'] > $productPrice->stock) {
             throw new InsufficientQuantityException();
         }
 
-        return $this->cartItemRepositories->createCartItem($data);
+        return CartItem::create($data);
     }
 
-    public function updateCartItem(array $data, string $id)
+    public function updateCartItem(array $data, int $userId, int $cartItemId): CartItem
     {
-        $cartItems = $this->cartItemRepositories->getCartItem($id);
+        $cart = Cart::where('user_id', $userId)
+            ->firstOrFail();
+        $cartItems = CartItem::where('cart_id', $cart->id)
+            ->where('id', $cartItemId)
+            ->with('product')
+            ->firstOrFail();
 
-        $product = $this->productRepositories->getProduct($cartItems->product_id);
-
-        if ($data['quantity'] > $product->stock) {
+        if ($data['quantity'] > $cartItems->product->stock) {
             throw new InsufficientQuantityException();
         }
 
-        return $this->cartItemRepositories->updateCartItem($data, $id);
+        $cartItems->update([
+            'quantity' => $data['quantity'],
+        ]);
+        return $cartItems->fresh();
     }
 
-    public function deleteCartItem(string $id)
+    public function deleteCartItem(string $id): bool
     {
-        $this->cartItemRepositories->getCartItem($id);
-        return $this->cartItemRepositories->deleteCartItem($id);
+        $cartItems = CartItem::findOrFail($id);
+        return $cartItems->delete();
     }
 }

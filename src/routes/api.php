@@ -67,6 +67,14 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/discounts/{id}', [DiscountController::class, 'show']);
         Route::put('/discounts/{id}', [DiscountController::class, 'update']);
         Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
+
+        // Coupon
+        Route::get('/coupons', [CouponController::class, 'index']);
+        Route::post('/coupons', [CouponController::class, 'store']);
+        Route::get('/coupons/{id}', [CouponController::class, 'show']);
+        Route::put('/coupons/{id}', [CouponController::class, 'update']);
+        Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
+
     });
 
     Route::middleware(['is_admin_or_mod'])->group(function () {
@@ -77,12 +85,6 @@ Route::middleware('auth:api')->group(function () {
 
     });
 
-    // Coupon
-    Route::get('/coupons', [CouponController::class, 'index'])->middleware('is_admin');
-    Route::post('/coupons', [CouponController::class, 'store'])->middleware('is_admin');
-    Route::get('/coupons/{id}', [CouponController::class, 'show'])->middleware('is_admin');
-    Route::put('/coupons/{id}', [CouponController::class, 'update'])->middleware('is_admin');
-    Route::delete('/coupons/{id}', [CouponController::class, 'destroy'])->middleware('is_admin');
 
     // Cart Items
     Route::get('/cart_items', [CartItemController::class, 'index']);
