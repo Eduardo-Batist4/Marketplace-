@@ -27,7 +27,7 @@ class CartItemService
         $data['unit_price'] = $productPrice->price;
 
         if ($data['quantity'] > $productPrice->stock) {
-            throw new InsufficientQuantityException();
+            throw new InsufficientQuantityException($cart->id, $data['quantity'], $productPrice->stock);
         }
 
         return CartItem::create($data);
@@ -41,9 +41,8 @@ class CartItemService
             ->where('id', $cartItemId)
             ->with('product')
             ->firstOrFail();
-
         if ($data['quantity'] > $cartItems->product->stock) {
-            throw new InsufficientQuantityException();
+            throw new InsufficientQuantityException($cart->id, $data['quantity'], $cartItems->product->stock);
         }
 
         $cartItems->update([

@@ -6,10 +6,41 @@ use Exception;
 
 class InsufficientQuantityException extends Exception
 {
-    public function render($request)
+    protected $productId;
+    protected $requestedQuantity;
+    protected $availableQuantity;
+
+    public function __construct($productId, $requestedQuantity, $availableQuantity)
     {
-        return response()->json([
-            'error' => 'Quantity exceeds available stock.'
-        ], 422);
+        $this->productId = $productId;
+        $this->requestedQuantity = $requestedQuantity;
+        $this->availableQuantity = $availableQuantity;
+
+        $message = "Insufficient stock. Requested: {$requestedQuantity}, Available: {$availableQuantity}";
+        parent::__construct($message);
+    }
+
+    public function getProductId()
+    {
+        return $this->productId;
+    }
+
+    public function getRequestedQuantity()
+    {
+        return $this->requestedQuantity;
+    }
+
+    public function getAvailableQuantity()
+    {
+        return $this->availableQuantity;
+    }
+
+    public function context()
+    {
+        return [
+            'product_id' => $this->productId,
+            'requested' => $this->requestedQuantity,
+            'available' => $this->availableQuantity,
+        ];
     }
 }
