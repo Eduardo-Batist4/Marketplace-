@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InvalidCredentialsException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Services\CartService;
+use App\Http\Resources\AuthResource;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -16,32 +17,30 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
 
-    public function __construct(protected UserService $userServices, protected CartService $cartService) {}
+    public function __construct(protected UserService $userServices) {}
 
-    public function login(LoginRequest $request): JsonResponse
+    public function login(LoginRequest $request): AuthResource|JsonResponse
     {
         try {
             $validateData = $request->validated();
 
             if(!$token = JWTAuth::attempt($validateData)) {
-                return response()->json([
-                    'error' => 'Incorrect credentials!',
-                ], 400);
+                throw new InvalidCredentialsException();
             }
 
-            return response()->json(["token" => $token], 200);
+            return AuthResource::make(['token' => $token]);
         } catch (JWTException $error) {
             return response()->json($error, 500);
         }
     }
 
-    public function register(RegisterRequest $request): JsonResponse
+    public function register(RegisterRequest $request): AuthResource|JsonResponse
     {
         DB::beginTransaction();
         try {
             $validateData = $request->validated();
 
-            if (!empty($data['image_path'])) {
+            if (!empty($validatedata['image_path'])) {
                 $imageName = Str::uuid() . '.' . $request->file('image_path')->getClientOriginalExtension();
 
                 $path = Storage::putFileAs('public/profiles', $request->file('image_path'), $imageName);
@@ -51,11 +50,16 @@ class AuthController extends Controller
                 unset($validateData['image_path']);
             }
 
-            $user = $this->userServices->createUser($validateData);
+            $validateData['role'] = 'client';
 
-            $this->cartService->createCart([ 'user_id' => $user->id ]);
+            $user = $this->userServices->createUser($validateData);
+            $token = JWTAuth::fromUser($user);
+
             DB::commit();
-            return response()->json($user, 201);
+            return AuthResource::make([
+                'token' => $token,
+                'user' => $user
+            ]);
         } catch (JWTException $error) {
             DB::rollback();
             return response()->json($error, 500);
