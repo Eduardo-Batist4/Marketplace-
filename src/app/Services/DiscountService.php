@@ -16,13 +16,13 @@ class DiscountService
     public function createDiscount(array $data): Discount
     {
         $allDiscountsForAProduct = Discount::where('product_id', $data['product_id'])->get();
-        $DiscountLimit = 0;
+        $discountLimit = 0;
 
         foreach ($allDiscountsForAProduct as $limit) {
-            $DiscountLimit += $limit->discount_percentage;
+            $discountLimit += $limit->discount_percentage;
         }
-        if (($DiscountLimit + $data['discount_percentage']) > 60) {
-            throw new MaxDiscountException();
+        if (($discountLimit + $data['discount_percentage']) > config('app.discount')) {
+            throw new MaxDiscountException($data['discount_percentage'], config('app.discount'), $discountLimit);
         }
 
         $discount = Discount::create($data);
@@ -39,13 +39,13 @@ class DiscountService
     {
         $allDiscountsForAProduct = Discount::where('product_id', $data['product_id'])->get();
 
-        $DiscountLimit = 0;
+        $discountLimit = 0;
 
         foreach ($allDiscountsForAProduct as $limit) {
-            $DiscountLimit += $limit->discount_percentage;
+            $discountLimit += $limit->discount_percentage;
         }
-        if (($DiscountLimit + $data['discount_percentage']) > 60) {
-            throw new MaxDiscountException();
+        if (($discountLimit + $data['discount_percentage']) > 60) {
+            throw new MaxDiscountException($data['discount_percentage'], config('app.discount'), $discountLimit);
         }
 
         $discount = Discount::findOrFail($id);
