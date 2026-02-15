@@ -10,6 +10,7 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'address_id' => $this->address_id,
             'user_id' => $this->user_id,
             'status' => $this->status,
