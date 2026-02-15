@@ -4,43 +4,13 @@ namespace App\Exceptions;
 
 use Exception;
 
-class InsufficientQuantityException extends Exception
+class InsufficientQuantityException extends Exception implements HttpExceptionInterface
 {
-    protected $productId;
-    protected $requestedQuantity;
-    protected $availableQuantity;
-
-    public function __construct($productId, $requestedQuantity, $availableQuantity)
+    public function __construct(int $productId, int $requestedQuantity, int $availableQuantity)
     {
-        $this->productId = $productId;
-        $this->requestedQuantity = $requestedQuantity;
-        $this->availableQuantity = $availableQuantity;
-
-        $message = "Insufficient stock. Requested: {$requestedQuantity}, Available: {$availableQuantity}";
-        parent::__construct($message);
+        parent::__construct("Insufficient stock. Requested: {$requestedQuantity}, Available: {$availableQuantity}");
     }
 
-    public function getProductId()
-    {
-        return $this->productId;
-    }
-
-    public function getRequestedQuantity()
-    {
-        return $this->requestedQuantity;
-    }
-
-    public function getAvailableQuantity()
-    {
-        return $this->availableQuantity;
-    }
-
-    public function context()
-    {
-        return [
-            'product_id' => $this->productId,
-            'requested' => $this->requestedQuantity,
-            'available' => $this->availableQuantity,
-        ];
-    }
+    public function getStatusCode(): int { return 400; }
+    public function getErrorType(): string { return 'Bad Request'; }
 }

@@ -4,12 +4,13 @@ namespace App\Exceptions;
 
 use Exception;
 
-class AlreadyGivenFeedbackException extends Exception
+class AlreadyGivenFeedbackException extends Exception implements HttpExceptionInterface
 {
-    public function render($request) 
+    public function __construct()
     {
-        return response()->json([
-            'error' => "You have already given feedback!"
-        ], 403);
+        parent::__construct("You have already given feedback for this order");
     }
+
+    public function getStatusCode(): int { return 400; }
+    public function getErrorType(): string { return 'Bad Request'; }
 }

@@ -4,35 +4,14 @@ namespace App\Exceptions;
 
 use Exception;
 
-class MaxDiscountException extends Exception
+class MaxDiscountException extends Exception implements HttpExceptionInterface
 {
-    protected $requestedDiscount;
-    protected $maxDiscount;
-
-    public function __construct(?string $requestedDiscount, ?int $maxDiscount, ?int $currentDiscount)
+    public function __construct(string|null $requestedDiscount, int|null $maxDiscount, int|null $currentDiscount)
     {
-        $this->requestedDiscount = $requestedDiscount;
-        $this->maxDiscount = $maxDiscount;
-
         $message = "Maximum discount exceeded. Requested: {$requestedDiscount}%, Current: {$currentDiscount}%, Maximum allowed: {$maxDiscount}%";
         parent::__construct($message);
     }
 
-    public function getRequestedDiscount()
-    {
-        return $this->requestedDiscount;
-    }
-
-    public function getMaxDiscount()
-    {
-        return $this->maxDiscount;
-    }
-
-    public function context(): array
-    {
-        return [
-            'requested_discount' => $this->requestedDiscount,
-            'max_discount' => $this->maxDiscount,
-        ];
-    }
+    public function getStatusCode(): int { return 400; }
+    public function getErrorType(): string { return 'Bad Request'; }
 }

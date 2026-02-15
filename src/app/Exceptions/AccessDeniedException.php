@@ -4,27 +4,14 @@ namespace App\Exceptions;
 
 use Exception;
 
-class AccessDeniedException extends Exception
+class AccessDeniedException extends Exception implements HttpExceptionInterface
 {
-    protected $action;
-
-    public function __construct($message = null, $action = null)
+    public function __construct()
     {
-        $this->action = $action;
-        $message = $message ?? 'You do not have permission to perform this action';
-        parent::__construct($message);
+        parent::__construct('You do not have permission to perform this action');
     }
 
-    public function getAction()
-    {
-        return $this->action;
-    }
+    public function getStatusCode(): int { return 403; }
+    public function getErrorType(): string { return 'Forbidden'; }
 
-    public function context()
-    {
-        return [
-            'action' => $this->action,
-            'user_id' => auth()->id(),
-        ];
-    }
 }
