@@ -13,13 +13,13 @@ class UserSeeder extends Seeder
     */
 
     use WithoutModelEvents;
-    
+
     public function run(): void
     {
         User::create([
             'name' => 'Eduardo',
-            'email' => 'eduardo@teste.com',
-            'password' => 'Eduardo123',
+            'email' => 'admin@teste.com',
+            'password' => 'Senha123',
             'image_path' => null,
             'role' => 'admin'
         ]);
