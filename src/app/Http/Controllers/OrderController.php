@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class OrderController extends Controller
@@ -12,46 +15,40 @@ class OrderController extends Controller
 
     public function __construct(protected OrderService $orderService) {}
 
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        return $this->orderService->getAllOrder(JWTAuth::user()->id);
+        $orders = $this->orderService->getAllOrder(JWTAuth::user()->id);
+        return OrderResource::collection($orders);
     }
 
-    public function getAllOrderEveryone()
+    public function getAllOrderEveryone(): AnonymousResourceCollection
     {
-        return $this->orderService->getAllOrderEveryone();
+        $orders = $this->orderService->getAllOrderEveryone();
+        return OrderResource::collection($orders);
     }
 
-    public function store(StoreOrderRequest $request)
+    public function store(StoreOrderRequest $request): OrderResource
     {
         $validateData = $request->validated();
 
         $order = $this->orderService->createOrder($validateData, JWTAuth::user()->id);
 
-        return response()->json([
-            'message' => 'Successfully placed!',
-            'order' => $order
-        ], 201);
+        return OrderResource::make($order);
     }
 
-    public function update(UpdateOrderRequest $request, int $id)
+    public function update(UpdateOrderRequest $request, int $id): OrderResource
     {
         $validateData = $request->validated();
 
         $order = $this->orderService->updateStatus($validateData, $id, JWTAuth::user()->id);
 
-        return response()->json([
-            'message' => 'Successfully updated!',
-            'order' => $order
-        ], 200);
+        return OrderResource::make($order);
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): Response
     {
         $this->orderService->deleteOrder($id);
 
-        return response()->json([
-            'message' => 'Successfully deleted!',
-        ], 204);
+        return response()->noContent();
     }
 }

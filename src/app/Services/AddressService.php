@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\AccessDeniedException;
-use App\Exceptions\ResourceNotFoundException;
+use App\Exceptions\NotFoundException;
 use App\Models\Address;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -13,8 +13,8 @@ class AddressService
     {
         $addresses = Address::where('user_id', $id)->get();
 
-        if (!$addresses) {
-            throw new ResourceNotFoundException();
+        if ($addresses->isEmpty()) {
+            throw new NotFoundException('Address');
         }
 
         return $addresses;

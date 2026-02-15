@@ -3,84 +3,54 @@
 namespace App\Services;
 
 use App\Exceptions\AccessDeniedException;
-use App\Exceptions\NoItemsCartException;
-use App\Exceptions\ResourceNotFoundException;
+use App\Exceptions\NoItemsInCartException;
+use App\Exceptions\NotFoundException;
 use App\Jobs\SendOrderCreateEMail;
 use App\Jobs\SendOrderStatusEmail;
-use App\Repositories\AddressRepositories;
-use App\Repositories\CartItemRepositories;
-use App\Repositories\CouponRepositories;
-use App\Repositories\OrdersRepositories;
-use App\Repositories\UserRepositories;
+use App\Models\Address;
+use App\Models\CartItem;
+use App\Models\Coupon;
+use App\Models\Order;
+use App\Models\OrderItems;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-
-    public function __construct(
-        protected OrdersRepositories $ordersRepositories,
-        protected UserRepositories $userRepositories,
-        protected AddressRepositories $addressRepositories,
-        protected OrderItemService $orderItemService,
-        protected ProductService $productService,
-        protected CouponRepositories $couponRepositories,
-        protected CartItemRepositories $cartItemRepositories
-    ) {}
-
-    public function getAllOrder($user_id)
+    public function getAllOrder($user_id): Collection
     {
-        return $this->ordersRepositories->getAllOrder($user_id);
+        return Order::where('user_id', $user_id)->with('orderItems.product')->get();
     }
 
-    public function getAllOrderEveryone()
+    public function getAllOrderEveryone(): Collection
     {
-        return $this->ordersRepositories->getAllOrderEveryone();
+        return Order::with(['user', 'orderItems.product'])->get();
     }
 
-    public function createOrder(array $data, int $user_id)
+    public function createOrder(array $data, int $user_id): Order
     {
-        $user = $this->userRepositories->getUser($user_id)->load('address');
+        $user = User::with(['address', 'cart.cartItems.product'])
+            ->findOrFail($user_id);
+
         $data['user_id'] = $user->id;
+        $data['status'] = config('app.order_status');
 
-        $address = $this->addressRepositories->getAddressWithUser($user->id, $data['address_id']);
-        if (!$address) {
-            throw new ResourceNotFoundException();
-        }
-
-        $cartItems = $user->cart->cartItems;
-        if ($cartItems->isEmpty()) {
-            throw new NoItemsCartException();
-        }
+        $this->validateOrderCreation($user, $data);
 
         DB::beginTransaction();
         try {
-            $order = $this->ordersRepositories->createOrder($data);
+            $orderData = $this->prepareOrderData($user, $data);
+            $order = Order::create($orderData['order']);
+            $this->createOrderItemsFromCart($order, $orderData['items']);
 
-            $totalCart = 0;
-
-            foreach ($cartItems as $item) {
-
-                $productPrice = $this->productHasDiscount($item->product_id, $item->unit_price);
-
-                $totalCart += $productPrice * $item->quantity;
-
-                $this->orderItemService->createOrderItem([
-                    'order_id' => $order->id,
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'unit_price' => $productPrice
-                ]);
-            }
-
-            $total_amount = $this->applyCoupon($totalCart, $data['coupon_id'] ?? null);
-
-            $order->update(['total_amount' => number_format($total_amount, 2, ',', '.')]);
+            $order->update(['total_amount' => $orderData['total_amount']]);
 
             DB::commit();
 
-            SendOrderCreateEMail::dispatch($user, $order);
+            $this->afterOrderCreated($user, $order);
 
-            $this->cartItemRepositories->deleteAllItems();
             return $order;
         } catch (\Exception $error) {
             DB::rollback();
@@ -88,29 +58,78 @@ class OrderService
         }
     }
 
-    public function productHasDiscount(int $id, int $unit_price)
+    private function validateOrderCreation(User $user, array $data): void
     {
-        $product = $this->productService->getProduct($id);
+        $address = Address::where('user_id', $user->id)
+            ->where('id', $data['address_id'])
+            ->first();
 
-        if (!$product->discounts) {
-            return $product->unit_price;
+        if (!$address) {
+            throw new NotFoundException('Address', $data['address_id']);
         }
 
-        $totalDiscount = 0;
-        foreach ($product->discounts as $discount) {
-            $totalDiscount += $discount->discount_percentage;
+        if ($user->cart->cartItems->isEmpty()) {
+            throw new NoItemsInCartException();
         }
-
-        return  $unit_price - ($unit_price * ($totalDiscount / 100));
     }
 
-    public function applyCoupon(int $totalPrice, ?int $id)
+    private function prepareOrderData(User $user, array $data): array
+    {
+        $items = [];
+        $totalCart = 0;
+
+        foreach ($user->cart->cartItems as $item) {
+            $productPrice = $this->productHasDiscount($item->product_id, $item->unit_price);
+            $totalCart += $productPrice * $item->quantity;
+            $items[] = [
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'unit_price' => $productPrice
+            ];
+        }
+
+        $total_amount = $this->applyCoupon($totalCart, $data['coupon_id'] ?? null);
+
+        return [
+            'order' => array_merge($data, ['user_id' => $user->id]),
+            'items' => $items,
+            'total_amount' => number_format($total_amount, 2, ',', '.')
+        ];
+    }
+
+    private function createOrderItemsFromCart(Order $order, array $items): void
+    {
+        foreach ($items as $item) {
+            OrderItems::create(array_merge($item, ['order_id' => $order->id]));
+        }
+    }
+
+    private function afterOrderCreated(User $user, Order $order): void
+    {
+        SendOrderCreateEMail::dispatch($user, $order);
+        CartItem::where('cart_id', $user->cart->id)->delete();
+    }
+
+    private function productHasDiscount(int $id, int $unit_price): int
+    {
+        $product = Product::with('discounts')->findOrFail($id);
+
+        if ($product->discounts->isEmpty()) {
+            return $product->price;
+        }
+
+        $totalDiscount = $product->discounts->sum('discount_percentage');
+
+        return $unit_price - ($unit_price * ($totalDiscount / 100));
+    }
+
+    private function applyCoupon(int $totalPrice, ?int $id): int
     {
         if (!$id) {
             return $totalPrice;
         }
 
-        $coupon = $this->couponRepositories->getCoupon($id);
+        $coupon = Coupon::find($id);
 
         if (!$coupon) {
             return $totalPrice;
@@ -119,25 +138,26 @@ class OrderService
         return $totalPrice - ($totalPrice * ($coupon->discount_percentage / 100));
     }
 
-    public function updateStatus(array $data, int $id, int $user_id)
+    public function updateStatus(array $data, int $id, int $user_id): Order
     {
-        if (!$this->userRepositories->userIsAdminOrModerator($user_id)) {
+        $user = User::findOrFail($user_id);
+
+        if (!in_array($user->role, ['admin', 'moderator'])) {
             throw new AccessDeniedException();
         }
 
-        $user = $this->userRepositories->getUser($user_id);
-        $order = $this->ordersRepositories->getOrder($id);
-
-        $order = $this->ordersRepositories->updateOrder($data, $id);
+        $order = Order::findOrFail($id);
+        $order->update($data);
 
         SendOrderStatusEmail::dispatch($user->email, $order);
-        return $order;
+
+        return $order->fresh();
     }
 
-    public function deleteOrder(int $id)
+    public function deleteOrder(int $id): bool
     {
-        $this->ordersRepositories->getOrder($id);
+        $order = Order::findOrFail($id);
 
-        return $this->ordersRepositories->deleteOrder($id);
+        return $order->delete();
     }
 }

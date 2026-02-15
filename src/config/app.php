@@ -192,5 +192,6 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'discount' => env('DISCOUNT_LIMIT', 60)
+    'discount' => env('DISCOUNT_LIMIT', 60),
+    'order_status' => env('ORDER_STATUS'),
 ];

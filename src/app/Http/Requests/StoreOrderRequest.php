@@ -22,10 +22,8 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'sometimes|numeric|exists:users,id',
             'address_id' => 'required|numeric|exists:addresses,id',
             'coupon_id' => 'sometimes|numeric',
-            'status' => 'sometimes|in:pending,processing,shipped,completed,canceled',
         ];
     }
 }

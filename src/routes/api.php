@@ -75,6 +75,9 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/coupons/{id}', [CouponController::class, 'update']);
         Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
 
+        // Order
+        Route::get('/orders/everyone', [OrderController::class, 'getAllOrderEveryone']);
+        Route::put('/orders/{id}', [OrderController::class, 'update']);
     });
 
     Route::middleware(['is_admin_or_mod'])->group(function () {
@@ -85,7 +88,6 @@ Route::middleware('auth:api')->group(function () {
 
     });
 
-
     // Cart Items
     Route::get('/cart_items', [CartItemController::class, 'index']);
     Route::post('/cart_items', [CartItemController::class, 'store']);
@@ -94,9 +96,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Order
     Route::get('/orders', [OrderController::class, 'index']);
-    Route::get('/orders/everyone', [OrderController::class, 'getAllOrderEveryone'])->middleware('is_admin');
     Route::post('/orders', [OrderController::class, 'store']);
-    Route::put('/orders/{id}', [OrderController::class, 'update'])->middleware('is_admin');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 
     // Feedback
