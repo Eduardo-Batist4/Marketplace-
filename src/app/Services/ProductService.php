@@ -3,15 +3,15 @@
 namespace App\Services;
 
 use App\Models\Product;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductService
 {
-    public function getAllProducts(array $filter): Collection
+    public function getAllProducts(array $filter): LengthAwarePaginator
     {
-        return Product::filter($filter)->with('discounts')->get();
+        return Product::applyFilters($filter)->with('discounts')->paginate(15);
     }
 
     public function createProduct(array $data): Product
@@ -29,8 +29,10 @@ class ProductService
 
     public function getProduct(int $id): Product
     {
-        $product = Product::findOrFail($id)->load('discounts');
-        return $product;
+        /*
+            If there are many feedbacks, a new route must be created to load the feedbacks with pagination
+        */
+        return Product::where('id', $id)->with(['discounts', 'feedbacks'])->first();
     }
 
     public function updateProduct(array $data, int $id): Product

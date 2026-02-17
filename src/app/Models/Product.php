@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Product extends Model
 {
@@ -43,19 +45,19 @@ class Product extends Model
         return $this->hasMany(Feedback::class);
     }
 
-    public function scopeFilter($query, array $filter)
+    public function scopeApplyFilters($query, array $filters): Builder
     {
         return $query
-            ->when($filter['name'] ?? null, fn ($q, $name) =>
+            ->when($filters['name'] ?? null, fn ($q, $name) =>
                 $q->where('name', 'like', "%{$name}%")
             )
-            ->when($filter['category_id'] ?? null, fn ($q, $categoryId) =>
+            ->when($filters['category_id'] ?? null, fn ($q, $categoryId) =>
                 $q->where('category_id', $categoryId)
             )
-            ->when($filter['min_price'] ?? null, fn ($q, $min) =>
+            ->when($filters['min_price'] ?? null, fn ($q, $min) =>
                 $q->where('price', '>=', $min)
             )
-            ->when($filter['max_price'] ?? null, fn ($q, $max) =>
+            ->when($filters['max_price'] ?? null, fn ($q, $max) =>
                 $q->where('price', '<=', $max)
             );
     }

@@ -8,8 +8,7 @@ class ProductNotDeliveredException extends Exception implements HttpExceptionInt
 {
     public function __construct()
     {
-        parent::__construct("Your product has not yet been delivered.
-        Feedback will only be possible once the item has been received!");
+        parent::__construct("Your product has not yet been delivered. Feedback will only be possible once the item has been received!");
     }
 
     public function getStatusCode(): int { return 422; }
