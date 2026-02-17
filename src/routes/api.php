@@ -27,7 +27,6 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
 // Feedback
-Route::get('/feedbacks/{id}/all', [FeedbackController::class, 'index']);
 Route::get('/feedbacks/{id}', [FeedbackController::class, 'show']);
 
 // Reset Password
@@ -86,6 +85,8 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/products/{id}', [ProductController::class, 'update']);
         Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
+        // Feedback
+        Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])->middleware('is_admin_or_mod');
     });
 
     // Cart Items
@@ -102,8 +103,6 @@ Route::middleware('auth:api')->group(function () {
     // Feedback
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
     Route::put('/feedbacks/{id}', [FeedbackController::class, 'update']);
-    Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])->middleware('is_admin_or_mod');
-
 });
 
 Route::middleware('auth:sanctum')->get('/who/is/user', function (Request $request) {

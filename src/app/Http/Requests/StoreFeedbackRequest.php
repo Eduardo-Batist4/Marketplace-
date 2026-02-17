@@ -23,7 +23,6 @@ class StoreFeedbackRequest extends FormRequest
     {
         return [
             'product_id' => 'required|numeric|exists:products,id',
-            'user_id' => 'sometimes|numeric|exists:users,id',
             'stars' => 'required|numeric|min:1|max:5',
             'image_path' => 'sometimes|image|mimes:jpeg,png,jpg,|max:2048',
             'description' => 'sometimes|string'

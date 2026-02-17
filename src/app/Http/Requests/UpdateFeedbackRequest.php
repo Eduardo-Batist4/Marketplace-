@@ -22,6 +22,7 @@ class UpdateFeedbackRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'stars' => 'sometimes|numeric|min:1|max:5',
             'description' => 'sometimes|string|min:3|max:255'
         ];
     }

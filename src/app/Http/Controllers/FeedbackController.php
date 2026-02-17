@@ -4,65 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFeedbackRequest;
 use App\Http\Requests\UpdateFeedbackRequest;
+use App\Http\Resources\FeedbackResource;
 use App\Services\FeedbackService;
+use Illuminate\Http\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class FeedbackController extends Controller
 {
-
     public function __construct(protected FeedbackService $feedbackService) {}
 
-    public function index(int $product_id)
+    public function store(StoreFeedbackRequest $request): FeedbackResource
     {
-        return $this->feedbackService->getAllFeedbacks($product_id);
-    }
-
-    public function store(StoreFeedbackRequest $request)
-    {
-        $validateData = $request->validated();
-
-        $validateData['user_id'] = JWTAuth::user()->id;
+        $validatedData = $request->validated();
         $validatedData['image_path'] = $request->file('image_path');
 
-        $feedback = $this->feedbackService->createFeedback($validateData);
+        $feedback = $this->feedbackService->createFeedback($validatedData, JWTAuth::user()->id);
 
-        if ($feedback instanceof \Illuminate\Http\JsonResponse) {
-            return $feedback;
-        }
-
-        return response()->json([
-            'message' => 'Successfully created!',
-            'feedback' => $feedback
-        ], 201);
+        return FeedbackResource::make($feedback);
     }
 
-    public function show(int $id)
+    public function show(int $id): FeedbackResource
     {
-        return response()->json($this->feedbackService->getFeedback($id), 200);
+        $feedback = $this->feedbackService->getFeedback($id);
+        return FeedbackResource::make($feedback);
     }
 
-    public function update(UpdateFeedbackRequest $request, int $id)
+    public function update(UpdateFeedbackRequest $request, int $id): FeedbackResource
     {
         $validateData = $request->validated();
 
         $feedback = $this->feedbackService->updateFeedback($validateData, $id, JWTAuth::user()->id);
 
-        if ($feedback instanceof \Illuminate\Http\JsonResponse) {
-            return $feedback;
-        }
-
-        return response()->json([
-            'message' => 'Successfully updated!',
-            'feedback' => $feedback
-        ], 200);
+        return FeedbackResource::make($feedback);
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): Response
     {
         $this->feedbackService->deleteFeedback($id);
-
-        return response()->json([
-            'message' => 'Successfully deleted!',
-        ], 204);     
+        return response()->noContent();
     }
 }
