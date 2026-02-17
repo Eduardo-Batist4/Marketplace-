@@ -51,7 +51,7 @@ class OrderService
 
             $this->afterOrderCreated($user, $order);
 
-            return $order;
+            return $order->fresh();
         } catch (\Exception $error) {
             DB::rollback();
             throw $error;
