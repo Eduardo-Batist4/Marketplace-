@@ -33,6 +33,9 @@ Route::get('/feedbacks/{id}', [FeedbackController::class, 'show']);
 Route::post('/forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('/reset-password', [UserController::class, 'resetPassword']);
 
+// Refresh Token
+Route::post('/refreshToken', [AuthController::class, 'updateAccessToken']);
+
 Route::middleware('auth:api')->group(function () {
 
     // Users
