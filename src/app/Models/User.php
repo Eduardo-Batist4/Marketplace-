@@ -78,4 +78,9 @@ class User extends Authenticatable implements JWTSubject, AuthCanResetPassword
     {
         return $this->hasMany(Feedback::class);
     }
+
+    public function refreshToken()
+    {
+        return $this->hasOne(RefreshToken::class);
+    }
 }
