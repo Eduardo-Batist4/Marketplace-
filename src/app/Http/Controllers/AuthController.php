@@ -6,10 +6,8 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RefreshTokenRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\RefreshTokenResource;
-use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use App\Services\UserService;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -30,13 +28,7 @@ class AuthController extends Controller
 
         $result = $this->authService->register($validatedData);
 
-        return response()->json([
-            'user' => UserResource::make($result['user']),
-            'access_token' => $result['token'],
-            'refresh_token' => $result['refresh_token'],
-            'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60,
-        ], 201);
+        return RefreshTokenResource::make($result);
     }
 
     public function updateAccessToken(RefreshTokenRequest $request): RefreshTokenResource

@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+use function App\Helpers\uploadImage;
+
 class AuthService
 {
     public function __construct(protected UserService $userServices){}
@@ -22,20 +24,19 @@ class AuthService
         if(!$token) {
             throw new InvalidCredentialsException();
         }
-
         $user = JWTAuth::user();
         $refreshToken = $this->createRefreshToken($user);
 
         return [
             'access_token' => $token,
-            'refresh_token' => $refreshToken->jti,
+            'refresh_token' => (string) $refreshToken->jti,
             'expires_at' => JWTAuth::factory()->getTTL() * 60,
         ];
     }
 
     public function register($data): array
     {
-        $data['image_path'] = $this->uploadProfileImage($data['image_path' ?? null]);
+        $data['image_path'] = uploadImage($data['image_path' ?? null], 'users');
         $data['role'] = 'client';
 
         DB::beginTransaction();
@@ -49,7 +50,7 @@ class AuthService
             return [
                 'user' => $user,
                 'access_token' => $token,
-                'refresh_token' => $refreshToken
+                'refresh_token' => (string) $refreshToken['jti'],
             ];
         } catch (\Exception $error) {
             DB::rollback();
@@ -105,15 +106,5 @@ class AuthService
             'token_type' => 'bearer',
             'expires_at' => JWTAuth::factory()->getTTL() * 60,
         ];
-    }
-
-    private function uploadProfileImage (?object $image): string|null
-    {
-        if(!$image) {
-            return null;
-        }
-
-        $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-        return Storage::putFileAs('public/feedback', $image, $imageName);
     }
 }
