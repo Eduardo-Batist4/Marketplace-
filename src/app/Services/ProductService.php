@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\Product;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+
+use function App\Helpers\deleteFile;
+use function App\Helpers\uploadImage;
 
 class ProductService
 {
@@ -16,12 +18,7 @@ class ProductService
 
     public function createProduct(array $data): Product
     {
-        $image = $data['image_path'];
-        $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-
-        $path = Storage::putFileAs('public/products', $image, $imageName);
-
-        $data['image_path'] = $path;
+        $data['image_path'] = uploadImage($data['image_path'] ?? null, 'products');
 
         $product = Product::create($data);
         return $product;
@@ -38,10 +35,30 @@ class ProductService
     public function updateProduct(array $data, int $id): Product
     {
         $product = Product::findOrFail($id);
+        DB::beginTransaction();
+        try {
+            if(isset($data['image_path']) && $data['image_path']) {
+                $oldImage = $product->image_path;
+                $data['image_path'] = uploadImage($data['image_path'], 'products');
 
-        $product->update($data);
+                if($oldImage) {
+                    deleteFile($oldImage);
+                }
+            }
 
-        return $product->fresh();
+            $product->update($data);
+
+            DB::commit();
+
+            return $product->fresh();
+        } catch (\Exception $error) {
+            DB::rollBack();
+
+            if (isset($data['image_path'])) {
+                deleteFile($data['image_path']);
+            }
+            throw $error;
+        }
     }
 
     public function deleteProduct(int $id): bool

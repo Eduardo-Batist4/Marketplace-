@@ -7,8 +7,8 @@ use App\Exceptions\AlreadyGivenFeedbackException;
 use App\Exceptions\ProductNotDeliveredException;
 use App\Models\Feedback;
 use App\Models\Order;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+
+use function App\Helpers\uploadImage;
 
 class FeedbackService
 {
@@ -18,7 +18,7 @@ class FeedbackService
 
         $this->validateFeedbackCreation($data, $userId);
 
-        $data['image_path'] = $this->uploadImage($data['image_path'] ?? null);
+        $data['image_path'] = uploadImage($data['image_path'] ?? null, 'feedback');
 
         return Feedback::create($data);
     }
@@ -45,16 +45,6 @@ class FeedbackService
         if ($alreadyGivenFeedback) {
             throw new AlreadyGivenFeedbackException();
         }
-    }
-
-    private function uploadImage (?object $image): string|null
-    {
-        if(!$image) {
-            return null;
-        }
-
-        $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-        return Storage::putFileAs('public/feedback', $image, $imageName);
     }
 
     public function getFeedback(int $id)
