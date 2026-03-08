@@ -8,7 +8,8 @@ class InsufficientQuantityException extends Exception implements HttpExceptionIn
 {
     public function __construct(int $productId, int $requestedQuantity, int $availableQuantity)
     {
-        parent::__construct("Insufficient stock. Requested: {$requestedQuantity}, Available: {$availableQuantity}");
+        parent::__construct("Insufficient stock for product ID {$productId}. " .
+            "Requested: {$requestedQuantity}, Available: {$availableQuantity}");
     }
 
     public function getStatusCode(): int { return 400; }
