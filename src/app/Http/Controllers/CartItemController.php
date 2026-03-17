@@ -17,7 +17,8 @@ class CartItemController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $cartItems = $this->cartItemService->getAllCartItems(JWTAuth::user()->id);
-        return CartItemResource::collection($cartItems);
+
+        return CartItemResource::collection($cartItems['items'])->additional(['total' => $cartItems['total']]);
     }
 
     public function store(StoreCartItemRequest $request): CartItemResource

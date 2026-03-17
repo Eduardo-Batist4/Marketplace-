@@ -6,23 +6,31 @@ use App\Exceptions\InsufficientQuantityException;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
-use Illuminate\Database\Eloquent\Collection;
 
 class CartItemService
 {
-    public function getAllCartItems(int $userId): Collection
+    private function getTotal($items): float
+    {
+        return $items->cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+    }
+
+    public function getAllCartItems(int $userId): array
     {
         $cart = Cart::where('user_id', $userId)
             ->with('cartItems.product')
             ->firstOrFail();
-        return $cart->cartItems;
+        $totalCart = $this->getTotal($cart);
+
+        return [
+            "items" => $cart->cartItems,
+            'total' => $totalCart
+        ];
     }
 
     public function createCartItem(array $data, int $userId): CartItem
     {
         $cart = Cart::where('user_id', $userId)->firstOrFail();
         $data['cart_id'] = $cart->id;
-
         $productPrice = Product::findOrFail($data['product_id']);
         $data['unit_price'] = $productPrice->price;
 
