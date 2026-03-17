@@ -15,12 +15,43 @@ class AuthTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->create([
+            'password' => bcrypt('Test1234!')
+        ]);
+    }
+
+    public function test_user_can_login_successfully(): void
+    {
+        $this->postJson('/api/auth/login', [
+            'email'    => $this->user->email,
+            'password' => 'Test1234!',
+        ])
+        ->assertStatus(200)
+        ->assertJsonStructure([
+            'data' => [
+                'access_token',
+                'refresh_token',
+            ]
+        ]);
+    }
+
+    public function test_invalid_login(): void
+    {
+        $this->postJson('/api/auth/login', [
+            'email'    => 'hello@2.com',
+            'password' => 'xxx',
+        ])
+        ->assertStatus(401)
+        ->assertJson([
+        'status'  => 401,
+        'error'   => 'Unauthorized',
+        'message' => 'Invalid credentials provided. Please check your email and password'
+        ]);
     }
 
     public function test_register_user_successfully(): void
     {
-        $this->post('/api/auth/register', [
+        $this->postJson('/api/auth/register', [
             'name' => 'Jhon Doe',
             'email' => 'jhondoe@test.com',
             'password' => 'JhonDoe123.'
@@ -49,7 +80,7 @@ class AuthTest extends TestCase
 
     public function test_register_assigns_default_role_to_new_user(): void
     {
-        $this->post('/api/auth/register', [
+        $this->postJson('/api/auth/register', [
             'name' => 'Jhon Doe 2',
             'email' => 'jhondoe2@test.com',
             'password' => 'JhonDoe123.',
@@ -127,7 +158,7 @@ class AuthTest extends TestCase
 
     public function test_register_password_is_hashed_in_database(): void
     {
-        $user = $this->post('/api/auth/register', [
+        $user = $this->postJson('/api/auth/register', [
             'name' => 'Jhon Doe 3',
             'email' => 'jhondoe3@test.com',
             'password' => 'JhonDoe123.',
