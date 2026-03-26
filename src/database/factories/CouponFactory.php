@@ -17,7 +17,8 @@ class CouponFactory extends Factory
             'code' => strtoupper(fake()->lexify('????') . sprintf('%02d', $discount_percentage)),
             'discount_percentage' => $discount_percentage,
             'start_date' => now()->format('Y-m-d'),
-            'end_date' => fake()->dateTimeBetween('now', '+30 days')->format('Y-m-d')
+            'end_date' => fake()->dateTimeBetween('now', '+30 days')->format('Y-m-d'),
+            'limit' => fake()->numberBetween(10,200),
         ];
     }
 }

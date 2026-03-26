@@ -13,7 +13,8 @@ class Coupon extends Model
         'code',
         'discount_percentage',
         'start_date',
-        'end_date'
+        'end_date',
+        'limit',
     ];
 
     public function orders()
