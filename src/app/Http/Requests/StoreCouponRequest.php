@@ -23,9 +23,10 @@ class StoreCouponRequest extends FormRequest
     {
         return [
             'code' => 'required|string|min:2|max:6',
-            'discount_percentage' => 'required|numeric|min:1|max:100',
+            'discount_percentage' => 'required|numeric|min:1|max:50',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
+            'limit' => 'required|numeric|min:10|max:1000'
         ];
     }
 }

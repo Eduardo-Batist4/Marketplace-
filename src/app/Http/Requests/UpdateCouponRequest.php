@@ -23,9 +23,10 @@ class UpdateCouponRequest extends FormRequest
     {
         return [
             'code' => 'sometimes|string|min:2|max:5',
-            'discount_percentage' => 'sometimes|numeric|min:1|max:100',
+            'discount_percentage' => 'sometimes|numeric|min:1|max:50',
             'start_date' => 'sometimes|date|after_or_equal:today',
             'end_date' => 'sometimes|date|after:start_date',
+            'limit' => 'required|numeric|min:10|max:1000',
         ];
     }
 }
