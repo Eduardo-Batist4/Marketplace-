@@ -6,7 +6,6 @@ use App\Exceptions\AccessDeniedException;
 use App\Exceptions\NoItemsInCartException;
 use App\Exceptions\NotFoundException;
 use App\Jobs\SendOrderCreateEMail;
-use App\Jobs\SendOrderStatusEmail;
 use App\Models\Address;
 use App\Models\CartItem;
 use App\Models\Coupon;
@@ -14,6 +13,7 @@ use App\Models\Order;
 use App\Models\OrderItems;
 use App\Models\Product;
 use App\Models\User;
+use App\States\PendingState;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -35,7 +35,7 @@ class OrderService
             ->findOrFail($user_id);
 
         $data['user_id'] = $user->id;
-        $data['status'] = config('app.order_status');
+        $data['status'] = PendingState::STATUS;
 
         $this->validateOrderCreation($user, $data);
 
@@ -147,9 +147,8 @@ class OrderService
         }
 
         $order = Order::findOrFail($id);
-        $order->update($data);
 
-        SendOrderStatusEmail::dispatch($user->email, $order);
+        $order->getStateInstance()->transitionTo($order, $data['status']);
 
         return $order->fresh();
     }
