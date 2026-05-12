@@ -43,5 +43,7 @@ class DiscountSeeder extends Seeder
                     'updated_at' => now(),
                 ],
         ]);
+
+        Discount::factory()->count(10)->create();
     }
 }
