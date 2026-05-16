@@ -184,5 +184,4 @@ class AuthTest extends TestCase
 
         $this->assertEquals(3600, $response->json('data.expires_in'));
     }
-
 }
